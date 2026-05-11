@@ -1,0 +1,177 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.badge {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.badgeSafe {
+  border-color: color-mix(in srgb, var(--color-safe) 50%, transparent);
+  background: color-mix(in srgb, var(--color-safe) 10%, var(--color-surface));
+  color: color-mix(in srgb, var(--color-safe) 80%, var(--color-text-main));
+}
+
+.badgeWarning {
+  border-color: color-mix(in srgb, var(--color-warning) 50%, transparent);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  color: color-mix(in srgb, var(--color-warning) 70%, var(--color-text-main));
+}
+
+.badgeDanger {
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  color: color-mix(in srgb, var(--color-danger) 75%, var(--color-text-main));
+}
+
+.description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-main);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-main);
+  font-size: 14px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn:hover {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary-glow) 10%, var(--color-surface));
+  text-decoration: none;
+}
+
+.btnPrimary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btnPrimary:hover {
+  background: var(--color-primary-glow);
+  border-color: var(--color-primary-glow);
+  color: #ffffff;
+}
+
+.btnDanger {
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+  color: var(--color-danger);
+}
+
+.btnDanger:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.sidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mapHost {
+  position: relative;
+  height: 260px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.mapHost :global(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+}
+
+.infoBlock {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoBlock dt {
+  font-weight: 600;
+  color: var(--color-text-main);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.infoBlock dd {
+  margin: 0 0 6px;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 860px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+}
