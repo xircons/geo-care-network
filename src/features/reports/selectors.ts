@@ -3,14 +3,30 @@ import type { RootState } from "../../app/store";
 import { reportsApi } from "./reportsApi";
 
 const selectUi = (state: RootState) => state.ui;
-const selectReportsResult = reportsApi.endpoints.listReports.select();
-const selectReports = createSelector(selectReportsResult, (result) => result.data ?? []);
+const selectReportsResult = reportsApi.endpoints.getReports.select();
 
-export const selectFilteredReports = createSelector([selectReports, selectUi], (reports, ui) =>
-  reports.filter((report) => {
-    const severityMatch = ui.severityFilter === "all" || report.severity === ui.severityFilter;
-    const q = ui.searchQuery.toLowerCase().trim();
-    const queryMatch = !q || report.title.toLowerCase().includes(q) || report.address.toLowerCase().includes(q);
-    return severityMatch && queryMatch;
-  })
+export const selectReports = createSelector(selectReportsResult, (result) => result.data ?? []);
+
+export const selectFilteredReports = createSelector(
+  [selectReports, selectUi],
+  (reports, ui) => {
+    const query = ui.searchQuery.trim().toLowerCase();
+
+    return reports.filter((report) => {
+      if (ui.severityFilter !== "all" && report.severity !== ui.severityFilter) {
+        return false;
+      }
+      if (ui.categoryFilter !== "all" && report.category !== ui.categoryFilter) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+
+      return [report.title, report.description, report.address, report.reporter]
+        .join(" ")
+        .toLowerCase()
+        .includes(query);
+    });
+  }
 );

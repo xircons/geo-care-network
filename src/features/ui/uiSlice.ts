@@ -1,26 +1,43 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { UiState } from "../../types";
+import type { ReportCategory, Severity } from "../../types";
 
-const initialState: UiState = { severityFilter: "all", searchQuery: "", toastMessage: null };
+type SeverityFilter = Severity | "all";
+type CategoryFilter = ReportCategory | "all";
+
+export interface UiState {
+  severityFilter: SeverityFilter;
+  categoryFilter: CategoryFilter;
+  searchQuery: string;
+  toastMessage: string | null;
+}
+
+const initialState: UiState = {
+  severityFilter: "all",
+  categoryFilter: "all",
+  searchQuery: "",
+  toastMessage: null
+};
 
 const uiSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    setSeverityFilter: (state, action: PayloadAction<UiState["severityFilter"]>) => {
+    setSeverityFilter: (state, action: PayloadAction<SeverityFilter>) => {
       state.severityFilter = action.payload;
+    },
+    setCategoryFilter: (state, action: PayloadAction<CategoryFilter>) => {
+      state.categoryFilter = action.payload;
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
-    pushToast: (state, action: PayloadAction<string>) => {
+    setToastMessage: (state, action: PayloadAction<string | null>) => {
       state.toastMessage = action.payload;
-    },
-    clearToast: (state) => {
-      state.toastMessage = null;
-    },
-  },
+    }
+  }
 });
 
-export const { setSeverityFilter, setSearchQuery, pushToast, clearToast } = uiSlice.actions;
+export const { setSeverityFilter, setCategoryFilter, setSearchQuery, setToastMessage } =
+  uiSlice.actions;
+
 export default uiSlice.reducer;
