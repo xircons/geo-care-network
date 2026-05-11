@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
-import type { RootState } from '../../app/store';
-import type { Report } from '../../types/report';
+import type { RootState } from '../app/store';
+import type { Report } from '../types/report';
 
 /**
  * Build a memoised selector that filters an externally-provided list of

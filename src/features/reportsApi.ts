@@ -3,7 +3,7 @@ import type {
   NewReportInput,
   Report,
   ReportUpdateInput,
-} from '../../types/report';
+} from '../types/report';
 
 const API_URL = import.meta.env.VITE_API_URL;
 if (!API_URL) {

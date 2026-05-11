@@ -3,7 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   ReportCategory,
   ReportStatus,
-} from '../../types/report';
+} from '../types/report';
 
 export type StatusFilter = 'all' | ReportStatus;
 export type CategoryFilter = 'all' | ReportCategory;
