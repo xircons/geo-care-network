@@ -5,8 +5,13 @@ import type {
   ReportUpdateInput,
 } from '../../types/report';
 
-const API_URL =
-  import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
+if (!API_URL) {
+  // Strict rule: API URL must come from the env, never hardcoded.
+  throw new Error(
+    'VITE_API_URL is not defined. Copy .env.example to .env before starting Vite.'
+  );
+}
 
 /**
  * RTK Query slice for the `reports` resource exposed by the mock REST API

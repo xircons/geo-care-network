@@ -9,8 +9,16 @@ lerna-debug.log*
 
 node_modules
 dist
+dist.old.*
 dist-ssr
 *.local
+
+# Vite writes timestamped temp configs on Windows-style fs when it can't
+# delete the previous one (our case via the read-only mount).
+vite.config.*.timestamp-*
+
+# Original Vite scaffold assets that we don't reference anymore.
+src/assets/
 
 # Local env (committed: .env.example only)
 .env
