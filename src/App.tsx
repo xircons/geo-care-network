@@ -4,14 +4,14 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
-import Layout from './components/Layout/Layout';
-import Toaster from './components/Toaster/Toaster';
-import HomePage from './pages/HomePage/HomePage';
-import ReportsPage from './pages/ReportsPage/ReportsPage';
-import ReportDetailPage from './pages/ReportDetailPage/ReportDetailPage';
-import NewReportPage from './pages/ReportDetailPage/NewReportPage';
-import EditReportPage from './pages/ReportDetailPage/EditReportPage';
-import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import Layout from './components/Layout';
+import Toaster from './components/Toaster';
+import HomePage from './pages/HomePage';
+import ReportsPage from './pages/ReportsPage';
+import ReportDetailPage from './pages/ReportDetailPage';
+import NewReportPage from './pages/NewReportPage';
+import EditReportPage from './pages/EditReportPage';
+import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
 const App = () => {

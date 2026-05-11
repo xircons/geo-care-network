@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
-import type { Report } from '../../types/report';
+import type { Report } from '../types/report';
 import styles from './MapMarker.module.css';
 
 interface MapMarkerProps {

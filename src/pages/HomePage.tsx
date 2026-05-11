@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useListReportsQuery } from '../../features/reports/reportsApi';
+import { useListReportsQuery } from '../features/reportsApi';
 import {
   makeSelectFilteredReports,
   makeSelectReportCounts,
-} from '../../features/reports/selectors';
-import { useAppSelector } from '../../app/hooks';
-import MapMarker from '../../components/MapMarker/MapMarker';
-import WhaleLoader from '../../components/WhaleLoader/WhaleLoader';
-import ErrorState from '../../components/ErrorState/ErrorState';
+} from '../features/selectors';
+import { useAppSelector } from '../app/hooks';
+import MapMarker from '../components/MapMarker';
+import WhaleLoader from '../components/WhaleLoader';
+import ErrorState from '../components/ErrorState';
 import styles from './HomePage.module.css';
 
 const CHIANG_MAI_CENTER: [number, number] = [18.7883, 98.9853];

@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useListReportsQuery } from '../../features/reports/reportsApi';
-import { makeSelectFilteredReports } from '../../features/reports/selectors';
+import { useListReportsQuery } from '../features/reportsApi';
+import { makeSelectFilteredReports } from '../features/selectors';
 import {
   clearFilters,
   setCategoryFilter,
   setSearchQuery,
   setStatusFilter,
-} from '../../features/ui/uiSlice';
+} from '../features/uiSlice';
 import type {
   CategoryFilter,
   StatusFilter,
-} from '../../features/ui/uiSlice';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import ReportCard from '../../components/ReportCard/ReportCard';
-import EmptyState from '../../components/EmptyState/EmptyState';
-import ErrorState from '../../components/ErrorState/ErrorState';
+} from '../features/uiSlice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import ReportCard from '../components/ReportCard';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 import styles from './ReportsPage.module.css';
 
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [

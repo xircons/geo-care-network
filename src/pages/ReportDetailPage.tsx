@@ -4,13 +4,13 @@ import 'leaflet/dist/leaflet.css';
 import {
   useDeleteReportMutation,
   useGetReportQuery,
-} from '../../features/reports/reportsApi';
-import MapMarker from '../../components/MapMarker/MapMarker';
-import WhaleLoader from '../../components/WhaleLoader/WhaleLoader';
-import ErrorState from '../../components/ErrorState/ErrorState';
-import type { Report } from '../../types/report';
-import { useAppDispatch } from '../../app/hooks';
-import { pushToast } from '../../features/ui/uiSlice';
+} from '../features/reportsApi';
+import MapMarker from '../components/MapMarker';
+import WhaleLoader from '../components/WhaleLoader';
+import ErrorState from '../components/ErrorState';
+import type { Report } from '../types/report';
+import { useAppDispatch } from '../app/hooks';
+import { pushToast } from '../features/uiSlice';
 import styles from './ReportDetailPage.module.css';
 
 const severityBadge: Record<Report['severity'], string> = {

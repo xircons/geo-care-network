@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import WhaleLoader from '../../components/WhaleLoader/WhaleLoader';
+import WhaleLoader from '../components/WhaleLoader';
 import styles from './NotFoundPage.module.css';
 
 const NotFoundPage = () => {
