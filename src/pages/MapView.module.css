@@ -1,0 +1,5 @@
+.wrap{height:calc(100vh - 57px)}
+.map{height:100%;width:100%}
+.pulse{position:absolute;width:24px;height:24px;border-radius:50%;opacity:.45;animation:pulseRing 2.2s infinite}
+.dot{position:absolute;left:6px;top:6px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 3px #fff;animation:pulseDot 1.4s infinite}
+.danger{background:#f43f5e}.warning{background:#f59e0b}.safe{background:#22c55e}

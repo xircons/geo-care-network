@@ -1,0 +1,6 @@
+.bar{position:sticky;top:0;background:#ffffffde;border-bottom:1px solid var(--line);backdrop-filter:blur(8px);z-index:10}
+.inner{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700}
+.nav{display:flex;gap:6px}
+.nav a{padding:6px 10px;border-radius:999px;text-decoration:none;color:var(--mute)}
+.active{background:var(--ink);color:#fff !important}

@@ -1,0 +1,2 @@
+.page{max-width:1200px;margin:0 auto;padding:20px}
+.grid{margin-top:12px;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}

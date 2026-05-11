@@ -1,46 +1,46 @@
 {
   "reports": [
     {
-      "id": "1",
-      "title": "Broken streetlight on Nimmanhaemin Road",
-      "description": "Streetlight has been out for 3 nights. The intersection near Soi 11 is very dark and unsafe for pedestrians at night. Multiple neighbors have reported near-misses with motorbikes.",
+      "id": "r1",
+      "title": "Illegal waste dumping near canal",
+      "description": "A pile of construction debris and household waste has been dumped along the canal embankment. Risk of contamination after the next rain.",
+      "category": "environment",
+      "status": "in progress",
+      "severity": "danger",
+      "reporter": "Somchai K.",
+      "address": "Canal Road, Chang Khlan, Mueang Chiang Mai",
+      "lat": 18.7889,
+      "lng": 98.9853,
+      "filed": "2026-05-02T21:30:00",
+      "updated": "2026-05-06T16:00:00"
+    },
+    {
+      "id": "r2",
+      "title": "Pothole on Nimman Soi 7",
+      "description": "Deep pothole forming after rainstorm. Two scooter incidents reported this week.",
       "category": "infrastructure",
       "status": "open",
       "severity": "warning",
-      "latitude": 18.7969,
-      "longitude": 98.9678,
-      "address": "Nimmanhaemin Road, Suthep, Mueang Chiang Mai",
-      "reporter": "Anchalee P.",
-      "createdAt": "2026-05-04T08:12:00.000Z",
-      "updatedAt": "2026-05-04T08:12:00.000Z"
+      "reporter": "Pim N.",
+      "address": "Nimmanahaeminda Rd, Suthep, Mueang Chiang Mai",
+      "lat": 18.8001,
+      "lng": 98.9678,
+      "filed": "2026-05-08T08:14:00",
+      "updated": "2026-05-09T11:20:00"
     },
     {
-      "id": "2",
-      "title": "Illegal waste dumping near canal",
-      "description": "A pile of construction debris and household waste has been dumped along the canal embankment. Risk of contamination after the next rain. Needs cleanup by municipal services.",
-      "category": "environment",
-      "status": "in_progress",
-      "severity": "danger",
-      "latitude": 18.7889,
-      "longitude": 98.9853,
-      "address": "Canal Road, Chang Khlan, Mueang Chiang Mai",
-      "reporter": "Somchai K.",
-      "createdAt": "2026-05-02T14:30:00.000Z",
-      "updatedAt": "2026-05-11T06:52:03.134Z"
-    },
-    {
-      "id": "3",
-      "title": "Community garden cleanup completed",
-      "description": "The volunteer team finished restoring the community garden behind the temple. New benches installed and pathway repainted. Open to all residents on weekends.",
-      "category": "community",
+      "id": "r3",
+      "title": "Streetlight restored on Tha Phae",
+      "description": "Streetlight at the corner is now operating normally.",
+      "category": "infrastructure",
       "status": "resolved",
       "severity": "safe",
-      "latitude": 18.7883,
-      "longitude": 98.9931,
-      "address": "Tha Phae Gate, Phra Sing, Mueang Chiang Mai",
-      "reporter": "Nattaya S.",
-      "createdAt": "2026-04-20T10:00:00.000Z",
-      "updatedAt": "2026-05-08T16:45:00.000Z"
+      "reporter": "Anan T.",
+      "address": "Tha Phae Rd, Si Phum, Mueang Chiang Mai",
+      "lat": 18.7882,
+      "lng": 98.9931,
+      "filed": "2026-04-29T19:05:00",
+      "updated": "2026-05-04T09:40:00"
     }
   ]
 }

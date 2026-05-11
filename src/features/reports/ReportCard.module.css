@@ -1,0 +1,2 @@
+.card{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-decoration:none;color:var(--ink)}
+.card p{color:var(--mute)}
