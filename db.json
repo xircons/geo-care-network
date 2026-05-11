@@ -1,0 +1,46 @@
+{
+  "reports": [
+    {
+      "id": "1",
+      "title": "Broken streetlight on Nimmanhaemin Road",
+      "description": "Streetlight has been out for 3 nights. The intersection near Soi 11 is very dark and unsafe for pedestrians at night. Multiple neighbors have reported near-misses with motorbikes.",
+      "category": "infrastructure",
+      "status": "open",
+      "severity": "warning",
+      "latitude": 18.7969,
+      "longitude": 98.9678,
+      "address": "Nimmanhaemin Road, Suthep, Mueang Chiang Mai",
+      "reporter": "Anchalee P.",
+      "createdAt": "2026-05-04T08:12:00.000Z",
+      "updatedAt": "2026-05-04T08:12:00.000Z"
+    },
+    {
+      "id": "2",
+      "title": "Illegal waste dumping near canal",
+      "description": "A pile of construction debris and household waste has been dumped along the canal embankment. Risk of contamination after the next rain. Needs cleanup by municipal services.",
+      "category": "environment",
+      "status": "in_progress",
+      "severity": "danger",
+      "latitude": 18.7889,
+      "longitude": 98.9853,
+      "address": "Canal Road, Chang Khlan, Mueang Chiang Mai",
+      "reporter": "Somchai K.",
+      "createdAt": "2026-05-02T14:30:00.000Z",
+      "updatedAt": "2026-05-06T09:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "title": "Community garden cleanup completed",
+      "description": "The volunteer team finished restoring the community garden behind the temple. New benches installed and pathway repainted. Open to all residents on weekends.",
+      "category": "community",
+      "status": "resolved",
+      "severity": "safe",
+      "latitude": 18.7883,
+      "longitude": 98.9931,
+      "address": "Tha Phae Gate, Phra Sing, Mueang Chiang Mai",
+      "reporter": "Nattaya S.",
+      "createdAt": "2026-04-20T10:00:00.000Z",
+      "updatedAt": "2026-05-08T16:45:00.000Z"
+    }
+  ]
+}
