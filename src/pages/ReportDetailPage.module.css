@@ -1,0 +1,12 @@
+.page {
+  padding: 20px 28px 28px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+}
