@@ -19,13 +19,15 @@ strict architectural rubric.
 ```
 src/
 ├── app/                # store, typed hooks
-├── components/         # reusable UI (Layout, MapMarker, ReportCard, WhaleLoader, …)
-├── features/
-│   ├── reports/        # reportsApi (RTK Query), selectors, ReportForm
-│   └── ui/             # uiSlice (filters, toasts, selection)
-├── pages/              # one folder per route
-├── styles/             # global theme variables only (index.css)
-└── types/              # shared TS types
+├── components/         # flat: Layout.tsx, MapMarker.tsx, WhaleLoader.tsx, …
+│                       # each component owns its CSS Module sibling
+├── features/           # flat: reportsApi.ts, uiSlice.ts, selectors.ts,
+│                       # ReportForm.tsx (+ ReportForm.module.css)
+├── pages/              # flat: HomePage.tsx, ReportsPage.tsx,
+│                       # ReportDetailPage.tsx, NewReportPage.tsx,
+│                       # EditReportPage.tsx, NotFoundPage.tsx
+├── index.css           # theme variables + minimal resets (no layout)
+└── types/              # shared TS types (report.ts)
 ```
 
 ## Environment

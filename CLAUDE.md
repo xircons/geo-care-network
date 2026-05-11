@@ -6,8 +6,9 @@ public project rubric so review tooling can use the same source of truth.
 ## Architecture
 
 - **Folder layout** — `src/app/`, `src/components/`, `src/features/`,
-  `src/pages/`, `src/types/`, `src/styles/`. Each component owns its own
-  CSS Module sibling.
+  `src/pages/`, `src/types/`. The `components/`, `features/` and
+  `pages/` folders are flat (one TSX + matching `.module.css` sibling
+  per unit, no folder-per-component nesting).
 - **Components** — React 18 functional components and hooks only. No
   class components anywhere in `src/`.
 - **State** — Redux Toolkit `configureStore` with two slices:
