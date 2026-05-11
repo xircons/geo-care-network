@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { dismissToast } from '../../features/ui/uiSlice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { dismissToast } from '../features/uiSlice';
 import styles from './Toaster.module.css';
 
 const TOAST_TIMEOUT_MS = 3200;

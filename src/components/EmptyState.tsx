@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import WhaleLoader from '../WhaleLoader/WhaleLoader';
+import WhaleLoader from './WhaleLoader';
 import styles from './EmptyState.module.css';
 
 interface EmptyStateProps {

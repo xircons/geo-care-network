@@ -10,10 +10,10 @@ import type {
   ReportCategory,
   ReportSeverity,
   ReportStatus,
-} from '../../types/report';
-import { useAppDispatch } from '../../app/hooks';
-import { pushToast } from '../ui/uiSlice';
-import ErrorState from '../../components/ErrorState/ErrorState';
+} from '../types/report';
+import { useAppDispatch } from '../app/hooks';
+import { pushToast } from './uiSlice';
+import ErrorState from '../components/ErrorState';
 import styles from './ReportForm.module.css';
 
 interface ReportFormProps {

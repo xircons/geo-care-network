@@ -1,4 +1,4 @@
-import ReportForm from '../../features/reports/ReportForm';
+import ReportForm from '../features/ReportForm';
 
 const NewReportPage = () => <ReportForm />;
 

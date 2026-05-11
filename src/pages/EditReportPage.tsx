@@ -1,8 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
-import { useGetReportQuery } from '../../features/reports/reportsApi';
-import ReportForm from '../../features/reports/ReportForm';
-import WhaleLoader from '../../components/WhaleLoader/WhaleLoader';
-import ErrorState from '../../components/ErrorState/ErrorState';
+import { useGetReportQuery } from '../features/reportsApi';
+import ReportForm from '../features/ReportForm';
+import WhaleLoader from '../components/WhaleLoader';
+import ErrorState from '../components/ErrorState';
 
 const EditReportPage = () => {
   const { id } = useParams<{ id: string }>();
