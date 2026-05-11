@@ -1,2 +1,51 @@
-.card{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-decoration:none;color:var(--ink)}
-.card p{color:var(--mute)}
+.card {
+  text-align: left;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  transition: border-color .2s, transform .2s;
+}
+
+.card:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.title {
+  margin: 12px 0 10px;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mute);
+}
