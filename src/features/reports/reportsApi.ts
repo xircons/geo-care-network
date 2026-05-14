@@ -1,7 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Report, ReportInput } from "../../types";
 
-const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_API_URL;
+if (!baseUrl) {
+  throw new Error(
+    "VITE_API_URL is not set. Define it in your .env (see .env.example)."
+  );
+}
 
 export const reportsApi = createApi({
   reducerPath: "reportsApi",

@@ -1,0 +1,18 @@
+{
+  "name": "ai-sandbox",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Isolated Gemini API sandbox for crash-dataset testing (separate from main React app).",
+  "main": "run_test.js",
+  "scripts": {
+    "start": "node run_test.js",
+    "test": "node run_test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2"
+  }
+}

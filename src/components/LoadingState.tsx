@@ -9,6 +9,53 @@ interface LoadingStateProps {
   label?: string;
 }
 
+interface WhaleIconProps {
+  size?: number;
+  className?: string;
+  decorative?: boolean;
+}
+
+/**
+ * Minimalist Whale motif — SVG paths only. Used by the illustrated empty-state.
+ * Exported so Logo and other UI surfaces can reuse the same motif if needed.
+ */
+export function WhaleIcon({ size = 180, className, decorative = true }: WhaleIconProps) {
+  const ratio = size / 160;
+  const height = 90 * ratio;
+  return (
+    <svg
+      width={size}
+      height={height}
+      viewBox="0 0 160 90"
+      xmlns="http://www.w3.org/2000/svg"
+      role={decorative ? "presentation" : "img"}
+      aria-hidden={decorative ? true : undefined}
+      className={className}
+    >
+      <path
+        d="M22 58 C22 36, 58 30, 92 36 C112 39, 124 48, 138 44 L132 58 L140 68 L120 64 C100 74, 60 75, 36 68 C26 65, 22 62, 22 58 Z"
+        fill="#0EA5E9"
+      />
+      <path
+        d="M40 64 Q60 70 90 67"
+        stroke="#38BDF8"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.65"
+      />
+      <circle cx="44" cy="50" r="2.4" fill="#0F172A" />
+      <path
+        d="M58 30 Q56 20 58 14 M66 30 Q70 22 74 16"
+        stroke="#38BDF8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 export default function LoadingState({
   variant = "loading",
   label = "Loading data"
@@ -41,15 +88,7 @@ export default function LoadingState({
   return (
     <div className={styles.wrap}>
       <div className={styles.inner}>
-        <svg className={styles.whale} viewBox="0 0 240 120" role="img" aria-label={label}>
-          <path
-            d="M24 78c16-22 42-31 79-31 41 0 72 15 94 31-7 0-12 1-18 5-5 3-8 8-9 14H48c-7 0-13-7-13-15 0-2 0-3 1-4-5 1-8 4-12 10z"
-            fill="#0EA5E9"
-          />
-          <path d="M167 58c8-11 17-18 26-19-2 8-4 15-3 21" fill="none" stroke="#38BDF8" strokeWidth="5" />
-          <circle cx="70" cy="70" r="4" fill="#fff" />
-          <circle cx="70" cy="70" r="2" fill="#0F172A" />
-        </svg>
+        <WhaleIcon size={180} className={styles.whale} decorative={false} />
         <div className={styles.title}>{label}</div>
       </div>
     </div>
