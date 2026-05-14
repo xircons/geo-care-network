@@ -1,9 +1,10 @@
 /* eslint-disable */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
 import LoadingState from "../components/LoadingState";
+import StatTile from "../components/StatTile";
 import { useDeleteReportMutation, useGetReportsQuery } from "../features/reports/reportsApi";
 import { setToastMessage } from "../features/ui/uiSlice";
 import type { Report } from "../types";
@@ -38,93 +39,6 @@ const fmtDate = (s: string) => {
 const openGoogleMaps = (lat: number, lng: number) => {
   window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank", "noopener,noreferrer");
 };
-
-function Count({ to, duration = 900 }: { to: number; duration?: number }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    let raf: number | undefined;
-    let start: number | undefined;
-    const step = (t: number) => {
-      if (!start) start = t;
-      const p = Math.min(1, (t - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setN(Math.round(eased * to));
-      if (p < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => {
-      if (raf !== undefined) {
-        cancelAnimationFrame(raf);
-      }
-    };
-  }, [to, duration]);
-  return <span>{n}</span>;
-}
-
-function StatTile({
-  label,
-  value,
-  accent,
-  delay = 0
-}: {
-  label: string;
-  value: number;
-  accent?: string;
-  delay?: number;
-}) {
-  const [hover, setHover] = useState(false);
-  return (
-    <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        position: "relative",
-        padding: "16px 18px",
-        background: "var(--paper)",
-        border: "1px solid " + (hover ? "var(--ink)" : "var(--line)"),
-        borderRadius: 14,
-        animation: `fadeUp .6s ${delay}s both`,
-        overflow: "hidden",
-        transform: hover ? "translateY(-2px)" : "none",
-        boxShadow: hover ? "0 12px 28px -16px rgba(15,23,42,0.25)" : "none",
-        transition: "transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .2s"
-      }}
-    >
-      <div style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--mute)", fontWeight: 500 }}>
-        {label}
-      </div>
-      <div
-        style={{
-          marginTop: 8,
-          fontSize: 36,
-          fontWeight: 700,
-          letterSpacing: "-0.03em",
-          lineHeight: 1,
-          color: hover && accent ? accent : "var(--ink)",
-          transition: "color .2s"
-        }}
-      >
-        <Count to={value} />
-      </div>
-      {accent && (
-        <div
-          style={{
-            position: "absolute",
-            right: -10,
-            top: -10,
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-            background: accent,
-            opacity: hover ? 0.32 : 0.18,
-            transform: hover ? "scale(1.4)" : "scale(1)",
-            transition: "transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s"
-          }}
-        />
-      )}
-    </div>
-  );
-}
 
 function Spinner() {
   return (
@@ -184,9 +98,9 @@ export default function MapView() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <StatTile label="Total" value={reports.length} delay={0.05} />
-          <StatTile label="Open" value={open} accent="var(--accent)" delay={0.12} />
-          <StatTile label="Resolved" value={resolved} accent="var(--safe)" delay={0.18} />
+          <StatTile label="Total" value={reports.length} index={0} />
+          <StatTile label="Open" value={open} accent="var(--accent)" index={1} />
+          <StatTile label="Resolved" value={resolved} accent="var(--safe)" index={2} />
         </div>
 
         <div style={{ animation: "fadeUp .5s .2s both" }}>

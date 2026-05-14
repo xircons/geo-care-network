@@ -29,6 +29,9 @@ dist.old*
 # Test / coverage
 coverage
 
+# Local Gemini / video experiment (not shipped on main)
+ai-sandbox/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
