@@ -12,7 +12,7 @@ export const selectFilteredReports = createSelector(
   (reports, ui) => {
     const query = ui.searchQuery.trim().toLowerCase();
 
-    return reports.filter((report) => {
+    const filtered = reports.filter((report) => {
       if (ui.severityFilter !== "all" && report.severity !== ui.severityFilter) {
         return false;
       }
@@ -28,5 +28,9 @@ export const selectFilteredReports = createSelector(
         .toLowerCase()
         .includes(query);
     });
+
+    return [...filtered].sort(
+      (a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
+    );
   }
 );

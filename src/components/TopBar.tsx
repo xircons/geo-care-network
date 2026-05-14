@@ -41,7 +41,11 @@ export default function TopBar({ openCount }: TopBarProps) {
             );
           })}
         </nav>
-        <button type="button" className={styles.cta} onClick={() => navigate("/reports/new")}>
+        <button
+          type="button"
+          className={styles.cta}
+          onClick={() => navigate("/reports/new", { state: { backgroundLocation: location } })}
+        >
           <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
             <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>

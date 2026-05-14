@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import type { Location as RouterLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { store } from "./app/store";
 import Toast from "./components/Toast";
@@ -12,10 +13,12 @@ import MapView from "./pages/MapView";
 import NewReportPage from "./pages/NewReportPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import PulseView from "./pages/PulseView";
-import ReportDetailPage from "./pages/ReportDetailPage";
 import ReportsView from "./pages/ReportsView";
 
 function AppShell() {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: RouterLocation } | null;
+  const backgroundLocation = state?.backgroundLocation;
   const { data: reports = [] } = useGetReportsQuery();
   const toast = useAppSelector((state) => state.ui.toastMessage);
   const dispatch = useAppDispatch();
@@ -31,16 +34,22 @@ function AppShell() {
   return (
     <>
       <TopBar openCount={openCount} />
-      <Routes>
+      <Routes location={backgroundLocation || location}>
         <Route path="/" element={<MapView />} />
         <Route path="/reports" element={<ReportsView />} />
         <Route path="/reports/new" element={<NewReportPage />} />
-        <Route path="/reports/:id" element={<ReportDetailPage />} />
+        <Route path="/reports/:id" element={<Navigate to="/reports" replace />} />
         <Route path="/reports/:id/edit" element={<EditReportPage />} />
         <Route path="/pulse" element={<PulseView />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {backgroundLocation && (
+        <Routes>
+          <Route path="/reports/new" element={<NewReportPage />} />
+          <Route path="/reports/:id/edit" element={<EditReportPage />} />
+        </Routes>
+      )}
       <Toast msg={toast} />
     </>
   );

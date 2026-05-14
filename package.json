@@ -9,7 +9,7 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "preview": "vite preview",
-    "mock": "zero-mock --port 3000 --db db.json"
+    "mock": "zero-mock --file db.json --port 3000"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",

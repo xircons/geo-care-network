@@ -4,18 +4,68 @@
   border-radius: 18px;
   background: var(--paper);
   border: 1px solid var(--line);
-  transition: border-color .2s, transform .2s;
+  position: relative;
+  overflow: hidden;
+  animation: cardEnter 0.55s cubic-bezier(.2, .8, .2, 1) both;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .card:hover {
-  border-color: var(--ink);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--ink) 18%, var(--line));
+  box-shadow: 0 16px 32px -20px rgba(15, 23, 42, 0.22);
+}
+
+@keyframes cardEnter {
+  0% {
+    transform: translateY(16px) scale(0.985);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  transform: scaleY(0.55);
+  transform-origin: top;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card:hover .accent {
+  transform: scaleY(1);
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metaRight {
   font-size: 12px;
   color: var(--mute);
 }
@@ -24,13 +74,15 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 .title {
-  margin: 12px 0 10px;
-  font-size: 17px;
-  font-weight: 650;
-  line-height: 1.35;
+  margin: 14px 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
 }
 
 .desc {
@@ -46,6 +98,18 @@
   border-top: 1px dashed var(--line);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 12px;
   color: var(--mute);
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.25s;
+}
+
+.card:hover .open {
+  transform: translateX(4px);
 }

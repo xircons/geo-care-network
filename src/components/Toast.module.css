@@ -1,25 +1,135 @@
 .toast {
   position: fixed;
-  bottom: 24px;
+  z-index: 3000;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  border-radius: 999px;
+  padding: 12px 22px;
+  box-shadow:
+    0 18px 40px -16px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  white-space: nowrap;
+}
+
+/* ─── Success (bottom centre, slide up in / slide down out) ───────── */
+.success,
+.info {
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--ink);
   color: var(--paper);
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 16px 36px -16px rgba(0, 0, 0, 0.4);
-  animation: fadeUp .25s cubic-bezier(.2, .8, .2, 1) both;
-  z-index: 200;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  animation: toastSlideUpIn 0.32s cubic-bezier(.2, .85, .25, 1.05) both;
+}
+
+.successLeaving {
+  animation: toastSlideDownOut 0.3s cubic-bezier(.4, 0, .8, .25) both;
+}
+
+/* ─── Error (bottom left, slide in from left / slide out to left) ── */
+.error {
+  bottom: 22px;
+  left: 22px;
+  background: #fff5f6;
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  box-shadow:
+    0 18px 36px -18px rgba(244, 63, 94, 0.55),
+    0 0 0 1px rgba(244, 63, 94, 0.08) inset;
+  animation: errorSlideInLeft 0.36s cubic-bezier(.2, .85, .25, 1.05) both;
+  font-weight: 600;
+}
+
+.errorLeaving {
+  animation: errorSlideOutLeft 0.3s cubic-bezier(.4, 0, .8, .25) both;
+}
+
+.icon {
+  flex-shrink: 0;
+  animation: iconWobble 0.55s 0.18s cubic-bezier(.2, .85, .25, 1.05) both;
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--safe);
+  position: relative;
+}
+
+.success .dot {
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+
+.success .dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: var(--safe);
+  opacity: 0.5;
+  animation: ripple 1.8s ease-out infinite;
+}
+
+@keyframes toastSlideUpIn {
+  from {
+    transform: translate(-50%, 28px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideDownOut {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, 28px);
+    opacity: 0;
+  }
+}
+
+@keyframes errorSlideInLeft {
+  from {
+    transform: translateX(-130%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes errorSlideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-130%);
+    opacity: 0;
+  }
+}
+
+@keyframes iconWobble {
+  0%, 100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  55% {
+    transform: rotate(8deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
 }

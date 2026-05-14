@@ -5,21 +5,16 @@
 }
 
 .iconWrap {
-  position: relative;
   width: 34px;
   height: 34px;
+  flex-shrink: 0;
 }
 
-.dot {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--danger);
-  border: 2px solid var(--paper);
-  animation: pulseDot 1.6s ease-in-out infinite;
+.gif {
+  display: block;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .titleWrap {

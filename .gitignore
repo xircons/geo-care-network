@@ -7,27 +7,33 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build output
 dist
-dist.old.*
 dist-ssr
-*.local
+dist.old*
 
-# Vite writes timestamped temp configs on Windows-style fs when it can't
-# delete the previous one (our case via the read-only mount).
-vite.config.*.timestamp-*
-
-# Original Vite scaffold assets that we don't reference anymore.
-src/assets/
-
-# Local env (committed: .env.example only)
+# Local env (keep .env.example tracked)
 .env
+.env.local
 .env.*.local
+
+# Vite / tooling caches
+*.local
+.vite
+.eslintcache
+*.tsbuildinfo
+
+# Test / coverage
+coverage
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
+.claude
 .DS_Store
 *.suo
 *.ntvs*

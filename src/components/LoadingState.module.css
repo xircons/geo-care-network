@@ -1,0 +1,96 @@
+.wrapLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100dvh - 72px);
+  padding: 24px 16px;
+  background: var(--paper);
+  animation: fadeIn 0.5s ease both;
+}
+
+.innerLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gif {
+  display: block;
+  width: min(220px, 70vw);
+  height: auto;
+  max-height: min(50dvh, 320px);
+  object-fit: contain;
+}
+
+.loadingText {
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+  text-transform: lowercase;
+  animation: blink 2.2s ease-in-out infinite;
+}
+
+.wrap {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: fadeIn 0.5s ease both;
+}
+
+.inner {
+  position: relative;
+  text-align: center;
+  color: var(--mute);
+}
+
+.inner::before,
+.inner::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 28%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  opacity: 0;
+  animation: drift 2.6s ease-in-out infinite;
+}
+
+.inner::after {
+  left: 22%;
+  width: 4px;
+  height: 4px;
+  animation-delay: 1.1s;
+}
+
+.whale {
+  width: 180px;
+  animation: bob 2.4s ease-in-out infinite, breathe 5s ease-in-out infinite;
+  filter: drop-shadow(0 12px 24px rgba(14, 165, 233, 0.3));
+  transform-origin: center;
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  animation: blink 2.2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}

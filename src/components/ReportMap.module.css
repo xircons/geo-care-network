@@ -1,0 +1,330 @@
+.host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.hostWithMapAction:hover .mapActionHint,
+.hostWithMapAction:focus-within .mapActionHint {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.mapClickable {
+  cursor: pointer;
+}
+
+.coordsHud {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  z-index: 1100;
+  pointer-events: none;
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+}
+
+.mapActionHint {
+  position: absolute;
+  z-index: 1200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.mapActionLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.35);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mapActionLink:hover {
+  background: var(--paper);
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+.markerWrap {
+  position: relative;
+  width: 34px;
+  height: 34px;
+}
+
+.markerRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: waterRipple 2.4s cubic-bezier(0.22, 0.8, 0.24, 1) infinite;
+  transform-origin: center;
+}
+
+.markerRingAlt {
+  animation-delay: 0.75s;
+}
+
+.markerDot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    transform 0.25s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+  animation: waterCore 2.4s ease-in-out infinite;
+}
+
+.markerWrap:hover .markerDot {
+  transform: translate(-50%, -50%) scale(1.35);
+  filter: brightness(1.1);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.45),
+    0 0 18px 4px currentColor;
+}
+
+.markerSelected .markerDot {
+  transform: translate(-50%, -50%) scale(1.3);
+  animation-play-state: paused;
+}
+
+/* Resolved / safe: calm dot only, no water ripple */
+.markerResolved .markerRing {
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.markerResolved .markerDot {
+  animation: none;
+}
+
+@keyframes waterRipple {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.38;
+    filter: blur(0);
+  }
+  70% {
+    opacity: 0.14;
+  }
+  100% {
+    transform: scale(1.58);
+    opacity: 0;
+    filter: blur(0.5px);
+  }
+}
+
+@keyframes waterCore {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50.5%) scale(1.03);
+  }
+}
+
+:global(.leaflet-popup.report-hover-popup) {
+  margin-bottom: 12px;
+  pointer-events: auto;
+}
+
+:global(.leaflet-popup.report-hover-popup .leaflet-popup-content-wrapper) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+:global(.leaflet-popup.report-hover-popup .leaflet-popup-content) {
+  margin: 0 !important;
+  pointer-events: auto;
+}
+
+:global(.leaflet-popup.report-hover-popup .leaflet-popup-tip-container) {
+  margin-top: -1px;
+}
+
+:global(.leaflet-popup.report-hover-popup .leaflet-popup-tip) {
+  background: #0a162d !important;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  box-shadow: none !important;
+}
+
+.tooltipCard {
+  width: min(330px, 72vw);
+  background: linear-gradient(180deg, #0f1b34 0%, #0a162d 100%);
+  color: #e2e8f0;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 14px 28px -16px rgba(2, 6, 23, 0.9);
+  padding: 12px 14px;
+  animation: tooltipEnter 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: center bottom;
+}
+
+@keyframes tooltipEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tooltipTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tooltipSeverity {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tooltipSeverityDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.tooltipStatus {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.tooltipTitle {
+  margin: 8px 0 6px;
+  color: #f8fafc;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.tooltipDescription {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #cbd5e1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.tooltipMetaGrid {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.35);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.tooltipLabel,
+.tooltipWhereLabel {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.tooltipValue {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.tooltipWhereLabel {
+  margin-top: 9px;
+}
+
+.tooltipWhereValue {
+  margin-top: 3px;
+  color: #f8fafc;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.tooltipFooter {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.tooltipUpdated {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.tooltipCoords {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.tooltipAction {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e2e8f0;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tooltipAction:hover {
+  background: rgba(148, 163, 184, 0.2);
+  border-color: rgba(148, 163, 184, 0.34);
+}

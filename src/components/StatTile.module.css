@@ -1,10 +1,42 @@
 .tile {
+  position: relative;
+  overflow: hidden;
   text-align: left;
   padding: 16px 18px;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 14px;
   box-shadow: var(--shadow);
+  animation: fadeUp 0.5s cubic-bezier(.2, .8, .2, 1) both;
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(56, 189, 248, 0.18),
+    transparent
+  );
+  transform: translateX(-160%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  box-shadow: 0 24px 40px -22px rgba(14, 165, 233, 0.35);
+}
+
+.tile:hover::before {
+  animation: sheen 0.9s ease-in-out;
 }
 
 .label {
@@ -13,6 +45,11 @@
   text-transform: uppercase;
   color: var(--mute);
   font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.tile:hover .label {
+  color: var(--accent);
 }
 
 .value {
@@ -21,6 +58,12 @@
   line-height: 1;
   font-weight: 700;
   letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+.tile:hover .value {
+  animation: pop 0.5s cubic-bezier(.2, .8, .2, 1);
 }
 
 .sub {
