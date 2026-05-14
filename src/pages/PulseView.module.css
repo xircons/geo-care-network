@@ -109,7 +109,14 @@
   border-radius: 8px;
   transform-origin: bottom;
   animation: growBar 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--bar-delay, 0s);
   transition: filter 0.25s ease, transform 0.25s cubic-bezier(.2, .8, .2, 1);
+  height: var(--bar-height, 0%);
+  background: var(--bar-color, var(--ink));
+}
+
+.weekBarAccent {
+  background: var(--accent);
 }
 
 .weekCol:hover .weekBar {
@@ -223,8 +230,46 @@
   background: linear-gradient(90deg, var(--ink), var(--accent));
   border-radius: 999px;
   animation: growBarX 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--fill-delay, 0s);
   transform-origin: left;
   overflow: hidden;
+  width: var(--fill-width, 0%);
+}
+
+.severityCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.severityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sev-color, var(--ink));
+}
+
+.severityCount {
+  font-variant-numeric: tabular-nums;
+}
+
+.byCategoryPanel {
+  margin-top: 20px;
+}
+
+.barLabel {
+  text-transform: capitalize;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.barCount {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.donut {
+  margin-top: 14px;
 }
 
 .fill::after {

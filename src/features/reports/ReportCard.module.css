@@ -7,6 +7,7 @@
   position: relative;
   overflow: hidden;
   animation: cardEnter 0.55s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: var(--card-delay, 0s);
   transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.22s ease, border-color 0.22s ease;
 }
@@ -37,6 +38,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
+  background: var(--accent-color, var(--ink));
   transform: scaleY(0.55);
   transform-origin: top;
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -63,6 +65,8 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--accent-color, var(--ink));
+  background: color-mix(in srgb, var(--accent-color, var(--ink)) 10%, transparent);
 }
 
 .metaRight {
@@ -74,7 +78,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  background: var(--accent-color, var(--ink));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color, var(--ink)) 20%, transparent);
 }
 
 .title {

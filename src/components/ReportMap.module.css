@@ -212,12 +212,18 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--sev-color, var(--ink));
 }
 
 .tooltipSeverityDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  background: var(--sev-color, var(--ink));
+}
+
+.tooltipCategoryValue {
+  text-transform: capitalize;
 }
 
 .tooltipStatus {

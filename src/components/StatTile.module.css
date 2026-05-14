@@ -8,6 +8,7 @@
   border-radius: 14px;
   box-shadow: var(--shadow);
   animation: fadeUp 0.5s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: var(--tile-delay, 0s);
   transition: transform 0.25s cubic-bezier(.2, .8, .2, 1),
     box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -60,6 +61,7 @@
   letter-spacing: -.02em;
   font-variant-numeric: tabular-nums;
   display: inline-block;
+  color: var(--accent-color, var(--ink));
 }
 
 .tile:hover .value {

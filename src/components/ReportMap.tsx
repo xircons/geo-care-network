@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L, { type DivIcon } from "leaflet";
 import type { Report, Severity } from "../types";
@@ -361,12 +361,12 @@ export default function ReportMap({
                   onMouseEnter={() => keepOpen(report.id)}
                   onMouseLeave={() => scheduleClose()}
                 >
-                  <div className={styles.tooltipTop}>
-                    <span className={styles.tooltipSeverity} style={{ color: severityColor[report.severity] }}>
-                      <span
-                        className={styles.tooltipSeverityDot}
-                        style={{ background: severityColor[report.severity] }}
-                      />
+                  <div
+                    className={styles.tooltipTop}
+                    style={{ "--sev-color": severityColor[report.severity] } as CSSProperties}
+                  >
+                    <span className={styles.tooltipSeverity}>
+                      <span className={styles.tooltipSeverityDot} />
                       {severityLabel(report.severity)}
                     </span>
                     <span className={styles.tooltipStatus}>{statusLabel(report.status)}</span>
@@ -382,7 +382,7 @@ export default function ReportMap({
                     </div>
                     <div>
                       <div className={styles.tooltipLabel}>Category</div>
-                      <div className={styles.tooltipValue} style={{ textTransform: "capitalize" }}>
+                      <div className={`${styles.tooltipValue} ${styles.tooltipCategoryValue}`}>
                         {report.category}
                       </div>
                     </div>
@@ -392,11 +392,11 @@ export default function ReportMap({
                   <div className={styles.tooltipWhereValue}>{report.address}</div>
 
                   <div className={styles.tooltipFooter}>
-                    <span className={styles.tooltipUpdated}>
-                      <span
-                        className={styles.tooltipSeverityDot}
-                        style={{ background: severityColor[report.severity] }}
-                      />
+                    <span
+                      className={styles.tooltipUpdated}
+                      style={{ "--sev-color": severityColor[report.severity] } as CSSProperties}
+                    >
+                      <span className={styles.tooltipSeverityDot} />
                       Updated {timeAgo(report.updated)}
                     </span>
                     <span className={styles.tooltipCoords}>

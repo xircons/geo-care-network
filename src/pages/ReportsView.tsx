@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
@@ -113,87 +113,52 @@ export default function ReportsView() {
 
       {openReport && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 2000,
-            background: "rgba(15,23,42,0.45)",
-            backdropFilter: "blur(6px)",
-            animation: isDetailClosing ? "fadeOut .38s ease-in both" : "fadeIn .4s ease-out both",
-            display: "flex",
-            justifyContent: "flex-end"
-          }}
           onClick={closeDetail}
+          className={`${styles.drawerOverlay} ${isDetailClosing ? styles.drawerOverlayClosing : ""}`}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              width: "min(720px, 96vw)",
-              height: "100vh",
-              position: "relative",
-              zIndex: 2001,
-              background: "var(--paper)",
-              overflow: "auto",
-              borderLeft: "1px solid var(--line)",
-              animation: isDetailClosing
-                ? "drawerOut .38s cubic-bezier(0.4, 0, 0.2, 1) both"
-                : "drawerIn .42s cubic-bezier(0.16, 1, 0.3, 1) both"
-            }}
+            className={`${styles.drawer} ${isDetailClosing ? styles.drawerClosing : ""}`}
           >
-            <div
-              style={{
-                padding: "20px 32px",
-                borderBottom: "1px solid var(--line)",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                position: "sticky",
-                top: 0,
-                background: "rgba(248,250,252,0.95)",
-                backdropFilter: "blur(10px)",
-                zIndex: 2
-              }}
-            >
-              <button type="button" onClick={closeDetail} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--mute)", fontWeight: 500 }}>
+            <div className={styles.drawerHeader}>
+              <button type="button" onClick={closeDetail} className={styles.drawerBack}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
                 Back to map
               </button>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className={styles.drawerActions}>
                 <button
                   type="button"
+                  className={styles.drawerBtn}
                   onClick={() =>
                     navigate(`/reports/${openReport.id}/edit`, { state: { backgroundLocation: location } })
                   }
-                  style={{ padding: "8px 14px", borderRadius: 999, fontSize: 12, fontWeight: 500, background: "var(--paper-2)", border: "1px solid var(--line)" }}
                 >
                   Edit
                 </button>
                 <button
                   type="button"
+                  className={styles.drawerBtnDanger}
                   onClick={async () => {
                     await deleteReport(openReport.id).unwrap();
                     dispatch(setToastMessage("Report deleted"));
                     closeDetail();
                   }}
-                  style={{ padding: "8px 14px", borderRadius: 999, fontSize: 12, fontWeight: 500, background: "transparent", border: "1px solid rgba(244,63,94,0.4)", color: "var(--danger)" }}
                 >
                   Delete
                 </button>
               </div>
             </div>
 
-            <div style={{ padding: "28px 32px 40px" }}>
-              <h2 style={{ margin: 0, fontSize: 48, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1 }}>
-                {openReport.title}
-              </h2>
-              <div style={{ marginTop: 8, fontSize: 13, color: "var(--mute)" }}>
-                Filed by <strong style={{ color: "var(--ink)", fontWeight: 600 }}>{openReport.reporter}</strong> · {fmtDate(openReport.filed)}
+            <div className={styles.drawerBody}>
+              <h2 className={styles.drawerTitle}>{openReport.title}</h2>
+              <div className={styles.drawerFiled}>
+                Filed by <strong className={styles.drawerFiledStrong}>{openReport.reporter}</strong> · {fmtDate(openReport.filed)}
               </div>
-              <p style={{ marginTop: 22, fontSize: 16, lineHeight: 1.6, color: "var(--ink)" }}>{openReport.description}</p>
+              <p className={styles.drawerDescription}>{openReport.description}</p>
 
-              <div style={{ marginTop: 18, height: 220 }}>
+              <div className={styles.drawerMapWrap}>
                 <ReportMap
                   reports={[openReport]}
                   selectedId={openReport.id}
@@ -203,7 +168,7 @@ export default function ReportsView() {
                 />
               </div>
 
-              <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div className={styles.metaGrid}>
                 <Meta label="Address" value={openReport.address} />
                 <Meta label="Reporter" value={openReport.reporter} />
                 <Meta label="Filed" value={fmtDate(openReport.filed)} />
@@ -211,10 +176,8 @@ export default function ReportsView() {
                 <Meta label="Report ID" mono value={openReport.id.toUpperCase()} />
               </div>
 
-              <div style={{ marginTop: 22 }}>
-                <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)", fontWeight: 500, marginBottom: 14 }}>
-                  Activity
-                </div>
+              <div className={styles.activityWrap}>
+                <div className={styles.activityTitle}>Activity</div>
                 <Timeline report={openReport} />
               </div>
             </div>
@@ -236,9 +199,9 @@ function fmtDate(s: string) {
 
 function Meta({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div style={{ padding: 14, background: "var(--paper-2)", borderRadius: 12, border: "1px solid var(--line)" }}>
-      <div style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--mute)", fontWeight: 500 }}>{label}</div>
-      <div style={{ marginTop: 6, fontSize: 14, fontWeight: 500, fontFamily: mono ? "'Geist Mono', monospace" : "Geist" }}>{value}</div>
+    <div className={styles.metaTile}>
+      <div className={styles.metaLabel}>{label}</div>
+      <div className={`${styles.metaValue} ${mono ? styles.metaValueMono : ""}`}>{value}</div>
     </div>
   );
 }
@@ -252,15 +215,15 @@ function Timeline({ report }: { report: Report }) {
   ];
 
   return (
-    <div style={{ position: "relative", paddingLeft: 22 }}>
-      <div style={{ position: "absolute", left: 6, top: 6, bottom: 6, width: 1, background: "var(--line)" }} />
+    <div className={styles.timeline}>
       {events.map((event, idx) => (
-        <div key={idx} style={{ position: "relative", paddingBottom: idx === events.length - 1 ? 0 : 18 }}>
-          <div style={{ position: "absolute", left: -22, top: 2, width: 13, height: 13, borderRadius: "50%", background: "var(--paper)", border: `2px solid ${event.color}` }}>
-            <div style={{ position: "absolute", inset: 2, borderRadius: "50%", background: event.color }} />
-          </div>
-          <div style={{ fontSize: 14, fontWeight: 500 }}>{event.label}</div>
-          <div style={{ fontSize: 12, color: "var(--mute)", marginTop: 2 }}>{fmtDate(event.at)}</div>
+        <div key={idx} className={styles.timelineEvent}>
+          <div
+            className={styles.timelineDot}
+            style={{ "--timeline-color": event.color } as CSSProperties}
+          />
+          <div className={styles.timelineLabel}>{event.label}</div>
+          <div className={styles.timelineAt}>{fmtDate(event.at)}</div>
         </div>
       ))}
     </div>

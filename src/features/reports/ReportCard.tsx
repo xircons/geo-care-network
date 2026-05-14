@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import type { Report } from "../../types";
 import styles from "./ReportCard.module.css";
@@ -26,16 +27,20 @@ interface ReportCardProps {
 
 export default function ReportCard({ report, onOpen, index = 0 }: ReportCardProps) {
   /* Stagger matches MapView live feed: fadeUp from 0.35s + i * 0.06s */
-  const delayStyle = { animationDelay: `${0.35 + Math.min(index, 24) * 0.06}s` };
+  const cardStyle: CSSProperties = {
+    "--card-delay": `${0.35 + Math.min(index, 24) * 0.06}s`,
+    "--accent-color": severityColor[report.severity]
+  } as CSSProperties;
+
   const severityText =
     report.severity === "safe" ? "Resolved" : report.severity === "warning" ? "Attention" : "Urgent";
-  const color = severityColor[report.severity];
+
   const content = (
     <>
-      <div className={styles.accent} style={{ background: color }} />
+      <div className={styles.accent} />
       <div className={styles.meta}>
-        <div className={styles.badge} style={{ color, background: `${color}1a` }}>
-          <span className={styles.dot} style={{ background: color, boxShadow: `0 0 0 3px ${color}33` }} />
+        <div className={styles.badge}>
+          <span className={styles.dot} />
           {severityText}
         </div>
         <span className={styles.metaRight}>{timeAgo(report.updated)}</span>
@@ -60,7 +65,7 @@ export default function ReportCard({ report, onOpen, index = 0 }: ReportCardProp
         type="button"
         className={styles.card}
         onClick={() => onOpen(report)}
-        style={delayStyle}
+        style={cardStyle}
       >
         {content}
       </button>
@@ -68,7 +73,7 @@ export default function ReportCard({ report, onOpen, index = 0 }: ReportCardProp
   }
 
   return (
-    <Link to={`/reports/${report.id}`} className={styles.card} style={delayStyle}>
+    <Link to={`/reports/${report.id}`} className={styles.card} style={cardStyle}>
       {content}
     </Link>
   );

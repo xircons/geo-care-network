@@ -1,0 +1,30 @@
+.page {
+  animation: fadeUp 0.55s cubic-bezier(.2, .8, .2, 1) both;
+  padding: 32px 16px;
+}
+
+.actions {
+  text-align: center;
+  animation: fadeUp 0.55s 0.25s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.25s ease, border-color 0.2s ease;
+}
+
+.backLink:hover {
+  transform: translateY(-2px);
+  border-color: var(--ink);
+  box-shadow: 0 10px 20px -10px rgba(15, 23, 42, 0.3);
+}

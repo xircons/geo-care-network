@@ -274,6 +274,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  background: var(--dot-color, var(--ink));
 }
 
 .actions {

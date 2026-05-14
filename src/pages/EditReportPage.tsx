@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import LoadingState from "../components/LoadingState";
@@ -267,7 +267,7 @@ function EditReportDrawer({
                   onClick={() => updateField("severity", item.value as Severity)}
                 >
                   <div className={styles.severityTop}>
-                    <span className={styles.dot} style={{ background: item.color }} />
+                    <span className={styles.dot} style={{ "--dot-color": item.color } as CSSProperties} />
                     {item.label}
                   </div>
                   <div className={styles.severityMeta}>{item.hint}</div>

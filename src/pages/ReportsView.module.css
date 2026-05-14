@@ -212,6 +212,217 @@
   gap: 16px;
 }
 
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.drawerOverlayClosing {
+  animation: fadeOut 0.38s ease-in both;
+}
+
+.drawer {
+  width: min(720px, 96vw);
+  height: 100vh;
+  position: relative;
+  z-index: 2001;
+  background: var(--paper);
+  overflow: auto;
+  border-left: 1px solid var(--line);
+  animation: drawerIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.drawerClosing {
+  animation: drawerOut 0.38s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.drawerHeader {
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 2;
+}
+
+.drawerBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.drawerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.drawerBtn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+
+.drawerBtnDanger {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: var(--danger);
+}
+
+.drawerBody {
+  padding: 28px 32px 40px;
+}
+
+.drawerTitle {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.drawerFiled {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.drawerFiledStrong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.drawerDescription {
+  margin-top: 22px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.drawerMapWrap {
+  margin-top: 18px;
+  height: 220px;
+}
+
+.metaGrid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metaTile {
+  padding: 14px;
+  background: var(--paper-2);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.metaLabel {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.metaValue {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Geist";
+}
+
+.metaValueMono {
+  font-family: "Geist Mono", monospace;
+}
+
+.activityWrap {
+  margin-top: 22px;
+}
+
+.activityTitle {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 22px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--line);
+}
+
+.timelineEvent {
+  position: relative;
+  padding-bottom: 18px;
+}
+
+.timelineEvent:last-child {
+  padding-bottom: 0;
+}
+
+.timelineDot {
+  position: absolute;
+  left: -22px;
+  top: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--timeline-color, var(--ink));
+}
+
+.timelineDot::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--timeline-color, var(--ink));
+}
+
+.timelineLabel {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timelineAt {
+  font-size: 12px;
+  color: var(--mute);
+  margin-top: 2px;
+}
+
 @media (max-width: 900px) {
   .page {
     padding: 20px 16px 24px;

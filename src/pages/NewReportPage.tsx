@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useCreateReportMutation } from "../features/reports/reportsApi";
 import { setToastMessage, showToast } from "../features/ui/uiSlice";
 import LocationPickerMap from "../components/LocationPickerMap";
@@ -214,7 +214,7 @@ export default function NewReportPage() {
                   onClick={() => updateField("severity", item.value as Severity)}
                 >
                   <div className={styles.severityTop}>
-                    <span className={styles.dot} style={{ background: item.color }} />
+                    <span className={styles.dot} style={{ "--dot-color": item.color } as CSSProperties} />
                     {item.label}
                   </div>
                   <div className={styles.severityMeta}>{item.hint}</div>

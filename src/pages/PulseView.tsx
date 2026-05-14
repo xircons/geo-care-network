@@ -1,9 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, type CSSProperties } from "react";
 import StatTile from "../components/StatTile";
 import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
 import { useGetReportsQuery } from "../features/reports/reportsApi";
 import styles from "./PulseView.module.css";
+
+const SEV_COLOR = {
+  danger: "var(--danger)",
+  warning: "var(--warn)",
+  safe: "var(--safe)"
+} as const;
 
 export default function PulseView() {
   const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
@@ -73,12 +79,11 @@ export default function PulseView() {
               <div className={styles.weekCol} key={item.day}>
                 <div className={styles.weekColFill}>
                   <div
-                    className={styles.weekBar}
+                    className={`${styles.weekBar} ${index === 6 ? styles.weekBarAccent : ""}`}
                     style={{
-                      height: `${(item.n / maxWeek) * 100}%`,
-                      background: index === 6 ? "var(--accent)" : "var(--ink)",
-                      animationDelay: `${0.3 + index * 0.06}s`
-                    }}
+                      "--bar-height": `${(item.n / maxWeek) * 100}%`,
+                      "--bar-delay": `${0.3 + index * 0.06}s`
+                    } as CSSProperties}
                   />
                 </div>
                 <div className={styles.weekDay}>{item.day}</div>
@@ -93,34 +98,35 @@ export default function PulseView() {
           <div className={styles.severityList}>
             {stats.bySeverity.map((item) => (
               <div key={item.sev} className={styles.severityRow}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <span className={styles.severityCell}>
                   <span
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background:
-                        item.sev === "danger" ? "var(--danger)" : item.sev === "warning" ? "var(--warn)" : "var(--safe)"
-                    }}
+                    className={styles.severityDot}
+                    style={{ "--sev-color": SEV_COLOR[item.sev] } as CSSProperties}
                   />
                   {item.label}
                 </span>
-                <strong style={{ fontVariantNumeric: "tabular-nums" }}>{item.n}</strong>
+                <strong className={styles.severityCount}>{item.n}</strong>
               </div>
             ))}
           </div>
         </section>
       </div>
 
-      <section className={styles.panel} style={{ marginTop: 20 }}>
+      <section className={`${styles.panel} ${styles.byCategoryPanel}`}>
         <div className={styles.panelTitle}>By category</div>
         {Object.entries(stats.byCategory).map(([category, count], index) => (
           <div key={category} className={styles.bar}>
-            <div style={{ textTransform: "capitalize", fontSize: 13, fontWeight: 500 }}>{category}</div>
+            <div className={styles.barLabel}>{category}</div>
             <div className={styles.track}>
-              <div className={styles.fill} style={{ width: `${(count / maxCategory) * 100}%`, animationDelay: `${0.5 + index * 0.08}s` }} />
+              <div
+                className={styles.fill}
+                style={{
+                  "--fill-width": `${(count / maxCategory) * 100}%`,
+                  "--fill-delay": `${0.5 + index * 0.08}s`
+                } as CSSProperties}
+              />
             </div>
-            <strong style={{ fontVariantNumeric: "tabular-nums", textAlign: "right" }}>{count}</strong>
+            <strong className={styles.barCount}>{count}</strong>
           </div>
         ))}
       </section>
@@ -147,7 +153,7 @@ function Donut({
   }, []);
 
   return (
-    <svg viewBox="0 0 160 160" width="100%" height="180" style={{ marginTop: 14 }}>
+    <svg viewBox="0 0 160 160" width="100%" height="180" className={styles.donut}>
       <circle cx="80" cy="80" r={radius} fill="none" stroke="rgba(248,250,252,0.08)" strokeWidth="18" />
       {segments.map((segment) => {
         const stroke =
