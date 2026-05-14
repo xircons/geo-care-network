@@ -1,20 +1,31 @@
-/* eslint-disable */
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
 import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import StatTile from "../components/StatTile";
 import { useDeleteReportMutation, useGetReportsQuery } from "../features/reports/reportsApi";
 import { setToastMessage } from "../features/ui/uiSlice";
-import type { Report } from "../types";
+import type { Report, ReportStatus, Severity } from "../types";
 
-const SEV = {
+type SeverityFilter = Severity | "all";
+
+interface SeverityMeta {
+  color: string;
+  label: string;
+}
+
+const SEV: Record<Severity, SeverityMeta> = {
   safe: { color: "#22C55E", label: "Safe / resolved" },
   warning: { color: "#F59E0B", label: "Needs attention" },
   danger: { color: "#F43F5E", label: "Urgent / hazard" }
 };
-const STATUS_LABEL = { open: "Open", "in progress": "In progress", resolved: "Resolved" };
+const STATUS_LABEL: Record<ReportStatus, string> = {
+  open: "Open",
+  "in progress": "In progress",
+  resolved: "Resolved"
+};
 
 const timeAgo = (s: string) => {
   const ms = Date.now() - new Date(s).getTime();
@@ -54,22 +65,23 @@ export default function MapView() {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const [deleteReport] = useDeleteReportMutation();
-  const { data: reports = [], isLoading } = useGetReportsQuery();
-  const [filter, setFilter] = useState("all");
+  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
+  const [filter, setFilter] = useState<SeverityFilter>("all");
   const [selected, setSelected] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [isDetailClosing, setIsDetailClosing] = useState(false);
 
   const filtered = useMemo(() => {
-    const list = filter === "all" ? reports : reports.filter((r: any) => r.severity === filter);
+    const list =
+      filter === "all" ? reports : reports.filter((r: Report) => r.severity === filter);
     return [...list].sort(
       (a: Report, b: Report) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
     );
   }, [reports, filter]);
 
-  const open = reports.filter((r: any) => r.status !== "resolved").length;
-  const resolved = reports.filter((r: any) => r.status === "resolved").length;
-  const openReport = reports.find((r: any) => r.id === openId) as Report | undefined;
+  const open = reports.filter((r: Report) => r.status !== "resolved").length;
+  const resolved = reports.filter((r: Report) => r.status === "resolved").length;
+  const openReport = reports.find((r: Report) => r.id === openId);
 
   const closeDetail = () => {
     if (isDetailClosing) return;
@@ -81,6 +93,15 @@ export default function MapView() {
   };
 
   if (isLoading) return <LoadingState label="Loading neighborhood map" />;
+  if (isError) {
+    return (
+      <ErrorState
+        title="Couldn't load the map"
+        message="We weren't able to reach the reports service. Check that the mock API is running and try again."
+        onRetry={() => refetch()}
+      />
+    );
+  }
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: 24, padding: 24, maxWidth: 1600, margin: "0 auto", height: "calc(100vh - 73px)" }}>
@@ -106,12 +127,12 @@ export default function MapView() {
         <div style={{ animation: "fadeUp .5s .2s both" }}>
           <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)", fontWeight: 500, marginBottom: 8 }}>Filter by severity</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {[
+            {([
               { id: "all", label: "Everything", c: "var(--ink)" },
               { id: "danger", label: "Urgent", c: SEV.danger.color },
               { id: "warning", label: "Attention", c: SEV.warning.color },
               { id: "safe", label: "Resolved", c: SEV.safe.color }
-            ].map((f, idx) => (
+            ] as { id: SeverityFilter; label: string; c: string }[]).map((f, idx) => (
               <button
                 key={f.id}
                 onClick={() => setFilter(f.id)}
@@ -183,7 +204,7 @@ export default function MapView() {
               paddingBottom: 6
             }}
           >
-            {filtered.map((r: any, i: number) => (
+            {filtered.map((r: Report, i: number) => (
               <button
                 key={r.id}
                 onMouseEnter={() => setSelected(r.id)}
@@ -211,9 +232,9 @@ export default function MapView() {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: (SEV as any)[r.severity].color, boxShadow: `0 0 0 3px ${(SEV as any)[r.severity].color}33` }} />
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: SEV[r.severity].color, boxShadow: `0 0 0 3px ${SEV[r.severity].color}33` }} />
                   <span style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: selected === r.id ? "rgba(248,250,252,0.6)" : "var(--mute)" }}>
-                    {(STATUS_LABEL as any)[r.status]} · {r.category}
+                    {STATUS_LABEL[r.status]} · {r.category}
                   </span>
                   <span style={{ marginLeft: "auto", fontSize: 10, color: selected === r.id ? "rgba(248,250,252,0.5)" : "var(--mute)" }}>{timeAgo(r.updated)}</span>
                 </div>
@@ -238,7 +259,7 @@ export default function MapView() {
         <div style={{ position: "absolute", bottom: 20, left: 20, zIndex: 5, background: "rgba(248,250,252,0.92)", backdropFilter: "blur(10px)", border: "1px solid var(--line)", borderRadius: 14, padding: "12px 14px", boxShadow: "var(--shadow)" }}>
           <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--mute)", fontWeight: 500, marginBottom: 8 }}>Severity</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {Object.entries(SEV).map(([k, v]: any) => (
+            {(Object.entries(SEV) as [Severity, SeverityMeta][]).map(([k, v]) => (
               <div key={k} style={{ display: "flex", alignItems: "center", gap: 9, fontSize: 12 }}>
                 <span style={{ width: 10, height: 10, borderRadius: "50%", background: v.color, boxShadow: `0 0 0 3px ${v.color}33` }} />
                 <span>{v.label}</span>
@@ -325,11 +346,11 @@ export default function MapView() {
 
             <div style={{ padding: "28px 32px 40px" }}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                <span style={{ padding: "5px 11px", borderRadius: 999, fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", background: (SEV as any)[openReport.severity].color + "1a", color: (SEV as any)[openReport.severity].color }}>
+                <span style={{ padding: "5px 11px", borderRadius: 999, fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", background: SEV[openReport.severity].color + "1a", color: SEV[openReport.severity].color }}>
                   {openReport.severity === "safe" ? "Resolved" : openReport.severity === "warning" ? "Attention" : "Urgent"}
                 </span>
                 <span style={{ padding: "5px 11px", borderRadius: 999, fontSize: 11, fontWeight: 500, background: "var(--paper-2)", border: "1px solid var(--line)" }}>
-                  {(STATUS_LABEL as any)[openReport.status]}
+                  {STATUS_LABEL[openReport.status]}
                 </span>
                 <span style={{ padding: "5px 11px", borderRadius: 999, fontSize: 11, fontWeight: 500, background: "var(--paper-2)", border: "1px solid var(--line)", textTransform: "capitalize" }}>
                   {openReport.category}
@@ -389,7 +410,7 @@ function Timeline({ report }: { report: Report }) {
   const events = [
     { label: "Report filed", at: report.filed, color: "var(--mute)" },
     { label: "Acknowledged by ward", at: new Date(new Date(report.filed).getTime() + 1000 * 60 * 60 * 8).toISOString(), color: SEV.warning.color },
-    { label: report.status === "resolved" ? "Marked resolved" : "Latest update", at: report.updated, color: (SEV as any)[report.severity].color }
+    { label: report.status === "resolved" ? "Marked resolved" : "Latest update", at: report.updated, color: SEV[report.severity].color }
   ];
 
   return (

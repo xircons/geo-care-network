@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import StatTile from "../components/StatTile";
 import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { useGetReportsQuery } from "../features/reports/reportsApi";
 import styles from "./PulseView.module.css";
 
 export default function PulseView() {
-  const { data: reports = [], isLoading } = useGetReportsQuery();
+  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
 
   const stats = useMemo(() => {
     const open = reports.filter((r) => r.status === "open").length;
@@ -33,6 +34,16 @@ export default function PulseView() {
 
   if (isLoading) {
     return <LoadingState label="Loading pulse analytics" />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Couldn't load pulse data"
+        message="The analytics view requires a connection to the reports service. Please retry once the API is reachable."
+        onRetry={() => refetch()}
+      />
+    );
   }
 
   const maxCategory = Math.max(1, ...Object.values(stats.byCategory));

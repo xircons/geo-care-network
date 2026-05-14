@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
 import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import ReportCard from "../features/reports/ReportCard";
 import { selectFilteredReports } from "../features/reports/selectors";
 import { useDeleteReportMutation, useGetReportsQuery } from "../features/reports/reportsApi";
@@ -21,7 +22,7 @@ export default function ReportsView() {
   const [deleteReport] = useDeleteReportMutation();
   const ui = useAppSelector((state) => state.ui);
   const filteredReports = useAppSelector(selectFilteredReports);
-  const { data: reports = [], isLoading } = useGetReportsQuery();
+  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
   const [openReport, setOpenReport] = useState<Report | null>(null);
   const [isDetailClosing, setIsDetailClosing] = useState(false);
 
@@ -32,6 +33,16 @@ export default function ReportsView() {
 
   if (isLoading) {
     return <LoadingState label="Loading reports" />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        title="Couldn't load reports"
+        message="We weren't able to fetch the latest community reports. Please try again."
+        onRetry={() => refetch()}
+      />
+    );
   }
 
   const openDetail = (report: Report) => {

@@ -123,6 +123,13 @@ export default function NewReportPage() {
       await createReport(form).unwrap();
       dispatch(setToastMessage("Report filed"));
       close();
+    } catch {
+      dispatch(
+        showToast({
+          message: "Couldn't save the report. Please try again.",
+          tone: "error"
+        })
+      );
     } finally {
       setSubmitting(false);
     }
