@@ -65,8 +65,8 @@
       "updated": "2026-05-10T15:48:00"
     },
     {
-      "title": "รถชน",
-      "description": "รถชนคนตายระเบิด",
+      "title": "รถชนแ",
+      "description": "รถชนคนตายระเบิดตู้ม",
       "category": "infrastructure",
       "status": "open",
       "severity": "danger",
@@ -77,8 +77,25 @@
       "x": 50,
       "y": 50,
       "filed": "2026-05-12T04:50:07.211Z",
-      "updated": "2026-05-12T04:50:07.211Z",
+      "updated": "2026-05-14T11:10:48.529Z",
       "id": "5fdc8369-c8aa-445c-8727-07d46089ad3d"
+    },
+    {
+      "title": "จักร์ยานชนกันล้มบาดเจ็บ",
+      "description": "ตรงเมญ่า",
+      "category": "infrastructure",
+      "status": "open",
+      "severity": "warning",
+      "reporter": "น้องอั้มคนน่ารัก",
+      "address": "ตรงนั้นแหละ",
+      "lat": 18.801871,
+      "lng": 98.967316,
+      "id": "_q99Ttv4IkM",
+      "x": 50,
+      "y": 50,
+      "filed": "2026-05-14T11:12:27.416Z",
+      "updated": "2026-05-14T11:12:27.416Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

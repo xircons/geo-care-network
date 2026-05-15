@@ -9,7 +9,7 @@ interface TopBarProps {
 const tabs = [
   { id: "map", label: "Live map", to: "/" },
   { id: "reports", label: "Reports", to: "/reports" },
-  { id: "pulse", label: "Pulse", to: "/pulse" }
+  { id: "pulse", label: "CCTV", to: "/pulse" }
 ];
 
 export default function TopBar({ openCount }: TopBarProps) {

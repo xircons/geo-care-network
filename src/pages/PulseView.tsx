@@ -1,184 +1,218 @@
-import { useMemo, type CSSProperties } from "react";
-import StatTile from "../components/StatTile";
-import LoadingState from "../components/LoadingState";
-import ErrorState from "../components/ErrorState";
-import { useGetReportsQuery } from "../features/reports/reportsApi";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch } from "../app/hooks";
+import LocationPickerMap from "../components/LocationPickerMap";
+import { dismissToast, showToast } from "../features/ui/uiSlice";
+import type { Severity } from "../types";
 import styles from "./PulseView.module.css";
 
-const SEV_COLOR = {
-  danger: "var(--danger)",
-  warning: "var(--warn)",
-  safe: "var(--safe)"
-} as const;
+const INCIDENT_LAT = 18.7883;
+const INCIDENT_LNG = 98.9853;
+
+const SEVERITY_OPTIONS: Array<{
+  value: Severity;
+  label: string;
+  hint: string;
+  color: string;
+}> = [
+  { value: "safe", label: "Safe", hint: "Safe / resolved", color: "var(--safe)" },
+  { value: "warning", label: "Warning", hint: "Needs attention", color: "var(--warn)" },
+  { value: "danger", label: "Danger", hint: "Urgent / hazard", color: "var(--danger)" }
+];
+
+const parseCoord = (raw: string, fallback: number) => {
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : fallback;
+};
 
 export default function PulseView() {
-  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
+  const dispatch = useAppDispatch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [event, setEvent] = useState("Car crash");
+  const [severity, setSeverity] = useState<Severity>("danger");
+  const [latitude, setLatitude] = useState(String(INCIDENT_LAT));
+  const [longitude, setLongitude] = useState(String(INCIDENT_LNG));
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoName, setVideoName] = useState<string | null>(null);
 
-  const stats = useMemo(() => {
-    const open = reports.filter((r) => r.status === "open").length;
-    const inProgress = reports.filter((r) => r.status === "in progress").length;
-    const resolved = reports.filter((r) => r.status === "resolved").length;
-    const byCategory = reports.reduce<Record<string, number>>((acc, report) => {
-      acc[report.category] = (acc[report.category] ?? 0) + 1;
-      return acc;
-    }, {});
-    const bySeverity = [
-      { sev: "danger", n: reports.filter((r) => r.severity === "danger").length, label: "Urgent / hazard" },
-      { sev: "warning", n: reports.filter((r) => r.severity === "warning").length, label: "Needs attention" },
-      { sev: "safe", n: reports.filter((r) => r.severity === "safe").length, label: "Safe / resolved" }
-    ] as const;
-    const week = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      return {
-        day: d.toLocaleDateString("en", { weekday: "short" }),
-        n: 1 + ((i + reports.length) % 5)
-      };
-    });
-    return { open, inProgress, resolved, byCategory, bySeverity, week };
-  }, [reports]);
+  useEffect(() => {
+    return () => {
+      if (videoUrl) URL.revokeObjectURL(videoUrl);
+    };
+  }, [videoUrl]);
 
-  if (isLoading) {
-    return <LoadingState label="Loading pulse analytics" />;
-  }
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  if (isError) {
-    return (
-      <ErrorState
-        title="Couldn't load pulse data"
-        message="The analytics view requires a connection to the reports service. Please retry once the API is reachable."
-        onRetry={() => refetch()}
-      />
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    setVideoUrl(URL.createObjectURL(file));
+    setVideoName(file.name);
+    e.target.value = "";
+  };
+
+  const handleCancel = () => {
+    dispatch(dismissToast());
+  };
+
+  const handleReport = () => {
+    dispatch(
+      showToast({
+        message: "Incident reported successfully.",
+        tone: "error"
+      })
     );
-  }
+  };
 
-  const maxCategory = Math.max(1, ...Object.values(stats.byCategory));
-  const maxWeek = Math.max(1, ...stats.week.map((w) => w.n));
-  const total = stats.bySeverity.reduce((sum, item) => sum + item.n, 0);
+  const handleMapChange = (nextLat: number, nextLng: number) => {
+    setLatitude(nextLat.toFixed(6));
+    setLongitude(nextLng.toFixed(6));
+  };
 
   return (
     <section className={styles.page}>
-      <div className={styles.eyebrow}>Past 7 days</div>
-      <h1 className={styles.hero}>
-        The pulse of <em>the neighborhood.</em>
-      </h1>
+      <header className={styles.navbar}>
+        <div className={styles.navSpacer} />
+        <h1 className={styles.navTitle}>CCTV</h1>
+        <button
+          type="button"
+          className={styles.uploadBtn}
+          onClick={handleUploadClick}
+          title={videoName ?? undefined}
+        >
+          <span className={styles.uploadIcon} aria-hidden>
+            +
+          </span>
+          <span className={styles.uploadLabel}>
+            {videoName ?? "Upload Video"}
+          </span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="video/*"
+          className={styles.fileInput}
+          onChange={handleFileChange}
+        />
+      </header>
 
-      <div className={styles.grid}>
-        <StatTile label="Total reports" value={reports.length} />
-        <StatTile label="Urgent" value={stats.bySeverity[0].n} accent="var(--danger)" />
-        <StatTile label="Attention" value={stats.bySeverity[1].n} accent="var(--warn)" />
-        <StatTile label="Resolved" value={stats.bySeverity[2].n} accent="var(--safe)" />
+      <div className={styles.preview}>
+        {videoUrl ? (
+          <>
+            <video
+              key={videoUrl}
+              src={videoUrl}
+              className={styles.videoEl}
+              controls
+              autoPlay
+              playsInline
+            />
+            {videoName && (
+              <span className={styles.videoName}>{videoName}</span>
+            )}
+          </>
+        ) : (
+          <span className={styles.previewLabel}>Video Preview</span>
+        )}
       </div>
 
-      <div className={styles.mainGrid}>
-        <section className={styles.panel}>
-          <div className={styles.panelTitle}>Reports filed</div>
-          <div className={styles.panelLead}>This week</div>
-          <div className={styles.weekBars}>
-            {stats.week.map((item, index) => (
-              <div className={styles.weekCol} key={item.day}>
-                <div className={styles.weekColFill}>
-                  <div
-                    className={`${styles.weekBar} ${index === 6 ? styles.weekBarAccent : ""}`}
-                    style={{
-                      "--bar-height": `${(item.n / maxWeek) * 100}%`,
-                      "--bar-delay": `${0.3 + index * 0.06}s`
-                    } as CSSProperties}
-                  />
-                </div>
-                <div className={styles.weekDay}>{item.day}</div>
-              </div>
-            ))}
-          </div>
-        </section>
+      <div className={styles.details}>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="event">
+            Event
+          </label>
+          <input
+            id="event"
+            className={styles.input}
+            value={event}
+            onChange={(e) => setEvent(e.target.value)}
+            placeholder="Describe the event"
+          />
+        </div>
 
-        <section className={styles.darkPanel}>
-          <div className={styles.darkEyebrow}>Severity mix</div>
-          <Donut total={total} data={stats.bySeverity} />
-          <div className={styles.severityList}>
-            {stats.bySeverity.map((item) => (
-              <div key={item.sev} className={styles.severityRow}>
-                <span className={styles.severityCell}>
+        <div className={styles.field}>
+          <span className={styles.label}>Severity</span>
+          <div className={styles.severityGrid}>
+            {SEVERITY_OPTIONS.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                className={`${styles.severityOption} ${
+                  severity === item.value ? styles.severityOptionActive : ""
+                }`}
+                onClick={() => setSeverity(item.value)}
+              >
+                <div className={styles.severityTop}>
                   <span
                     className={styles.severityDot}
-                    style={{ "--sev-color": SEV_COLOR[item.sev] } as CSSProperties}
+                    style={{ background: item.color }}
                   />
                   {item.label}
-                </span>
-                <strong className={styles.severityCount}>{item.n}</strong>
-              </div>
+                </div>
+                <div className={styles.severityMeta}>{item.hint}</div>
+              </button>
             ))}
           </div>
-        </section>
+          <div className={styles.hint}>How urgent does this feel?</div>
+        </div>
+
+        <div className={styles.coords}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="lat">
+              Latitude
+            </label>
+            <input
+              id="lat"
+              className={styles.input}
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+              placeholder="Latitude"
+              inputMode="decimal"
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="lng">
+              Longitude
+            </label>
+            <input
+              id="lng"
+              className={styles.input}
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+              placeholder="Longitude"
+              inputMode="decimal"
+            />
+          </div>
+        </div>
       </div>
 
-      <section className={`${styles.panel} ${styles.byCategoryPanel}`}>
-        <div className={styles.panelTitle}>By category</div>
-        {Object.entries(stats.byCategory).map(([category, count], index) => (
-          <div key={category} className={styles.bar}>
-            <div className={styles.barLabel}>{category}</div>
-            <div className={styles.track}>
-              <div
-                className={styles.fill}
-                style={{
-                  "--fill-width": `${(count / maxCategory) * 100}%`,
-                  "--fill-delay": `${0.5 + index * 0.08}s`
-                } as CSSProperties}
-              />
-            </div>
-            <strong className={styles.barCount}>{count}</strong>
-          </div>
-        ))}
-      </section>
+      <div className={styles.field}>
+        <span className={styles.label}>Location on map</span>
+        <LocationPickerMap
+          lat={parseCoord(latitude, INCIDENT_LAT)}
+          lng={parseCoord(longitude, INCIDENT_LNG)}
+          onChange={handleMapChange}
+        />
+      </div>
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.cancelBtn}
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className={styles.reportBtn}
+          onClick={handleReport}
+        >
+          File report
+        </button>
+      </div>
     </section>
-  );
-}
-
-function Donut({
-  total,
-  data
-}: {
-  total: number;
-  data: readonly { sev: "danger" | "warning" | "safe"; n: number; label: string }[];
-}) {
-  const radius = 56;
-  const circumference = 2 * Math.PI * radius;
-  const segments = data.reduce<
-    { sev: "danger" | "warning" | "safe"; length: number; offset: number }[]
-  >((acc, item) => {
-    const length = ((item.n || 0) / Math.max(1, total)) * circumference;
-    const prevOffset = acc.length === 0 ? 0 : acc[acc.length - 1].offset + acc[acc.length - 1].length;
-    acc.push({ sev: item.sev, length, offset: prevOffset });
-    return acc;
-  }, []);
-
-  return (
-    <svg viewBox="0 0 160 160" width="100%" height="180" className={styles.donut}>
-      <circle cx="80" cy="80" r={radius} fill="none" stroke="rgba(248,250,252,0.08)" strokeWidth="18" />
-      {segments.map((segment) => {
-        const stroke =
-          segment.sev === "danger" ? "var(--danger)" : segment.sev === "warning" ? "var(--warn)" : "var(--safe)";
-        return (
-          <circle
-            key={segment.sev}
-            cx="80"
-            cy="80"
-            r={radius}
-            fill="none"
-            stroke={stroke}
-            strokeWidth="18"
-            strokeDasharray={`${segment.length} ${circumference - segment.length}`}
-            strokeDashoffset={-segment.offset}
-            transform="rotate(-90 80 80)"
-          />
-        );
-      })}
-      <text x="80" y="78" textAnchor="middle" fontSize="32" fontWeight="700" fill="var(--paper)" letterSpacing="-0.02em">
-        {total}
-      </text>
-      <text x="80" y="96" textAnchor="middle" fontSize="10" fill="rgba(248,250,252,0.5)" letterSpacing="2">
-        REPORTS
-      </text>
-    </svg>
   );
 }
