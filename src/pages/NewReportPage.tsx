@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useCreateReportMutation } from "../features/reports/reportsApi";
 import { setToastMessage, showToast } from "../features/ui/uiSlice";
 import LocationPickerMap from "../components/LocationPickerMap";
@@ -123,6 +124,13 @@ export default function NewReportPage() {
       await createReport(form).unwrap();
       dispatch(setToastMessage("Report filed"));
       close();
+    } catch {
+      dispatch(
+        showToast({
+          message: "Couldn't save the report. Please try again.",
+          tone: "error"
+        })
+      );
     } finally {
       setSubmitting(false);
     }
@@ -131,12 +139,16 @@ export default function NewReportPage() {
   const fieldClass = (key: FieldKey) =>
     `${styles.input} ${showErrors && errors[key] ? styles.inputError : ""}`;
 
-  return (
-    <div
-      className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
-      onClick={close}
-    >
+  return createPortal(
+    <>
       <div
+        className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
+        onClick={close}
+        aria-hidden
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
         className={`${styles.panel} ${isPanelOpen ? styles.panelOpen : ""} ${isClosing ? styles.panelClosing : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -207,7 +219,7 @@ export default function NewReportPage() {
                   onClick={() => updateField("severity", item.value as Severity)}
                 >
                   <div className={styles.severityTop}>
-                    <span className={styles.dot} style={{ background: item.color }} />
+                    <span className={styles.dot} style={{ "--dot-color": item.color } as CSSProperties} />
                     {item.label}
                   </div>
                   <div className={styles.severityMeta}>{item.hint}</div>
@@ -331,6 +343,7 @@ export default function NewReportPage() {
           </button>
         </footer>
       </div>
-    </div>
+    </>,
+    document.body
   );
 }

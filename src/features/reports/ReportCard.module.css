@@ -1,4 +1,10 @@
 .card {
+  /* Flex column lets us stretch the description and pin the footer to the
+     bottom of the card. height:100% picks up the row's stretched height
+     from the parent grid, so footers across a row align horizontally. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   text-align: left;
   padding: 20px;
   border-radius: 18px;
@@ -7,6 +13,7 @@
   position: relative;
   overflow: hidden;
   animation: cardEnter 0.55s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: var(--card-delay, 0s);
   transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.22s ease, border-color 0.22s ease;
 }
@@ -37,6 +44,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
+  background: var(--accent-color, var(--ink));
   transform: scaleY(0.55);
   transform-origin: top;
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -63,6 +71,8 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--accent-color, var(--ink));
+  background: color-mix(in srgb, var(--accent-color, var(--ink)) 10%, transparent);
 }
 
 .metaRight {
@@ -74,7 +84,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  background: var(--accent-color, var(--ink));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color, var(--ink)) 20%, transparent);
 }
 
 .title {
@@ -87,6 +98,9 @@
 
 .desc {
   margin: 0;
+  /* Take all remaining vertical space so the footer is pushed down even when
+     the description is short. */
+  flex: 1;
   font-size: 13px;
   color: var(--mute);
   line-height: 1.5;

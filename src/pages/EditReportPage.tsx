@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { useGetReportByIdQuery, useUpdateReportMutation } from "../features/reports/reportsApi";
 import { setToastMessage, showToast } from "../features/ui/uiSlice";
 import LocationPickerMap from "../components/LocationPickerMap";
@@ -30,7 +32,7 @@ function validate(form: ReportInput): FieldErrors {
 
 export default function EditReportPage() {
   const { id = "" } = useParams();
-  const { data: report, isLoading } = useGetReportByIdQuery(id);
+  const { data: report, isLoading, isError, refetch } = useGetReportByIdQuery(id);
   const [updateReport] = useUpdateReportMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -44,8 +46,18 @@ export default function EditReportPage() {
     navigate(`/reports/${id}`);
   };
 
-  if (isLoading || !report) {
+  if (isLoading) {
     return <LoadingState label="Loading report form" />;
+  }
+
+  if (isError || !report) {
+    return (
+      <ErrorState
+        title="Couldn't load this report"
+        message="The report may have been removed, or the service is temporarily unavailable."
+        onRetry={() => refetch()}
+      />
+    );
   }
 
   return (
@@ -54,9 +66,18 @@ export default function EditReportPage() {
       report={report}
       onClose={close}
       onSave={async (payload) => {
-        await updateReport({ id, ...payload }).unwrap();
-        dispatch(setToastMessage("Report updated"));
-        close();
+        try {
+          await updateReport({ id, ...payload }).unwrap();
+          dispatch(setToastMessage("Report updated"));
+          close();
+        } catch {
+          dispatch(
+            showToast({
+              message: "Couldn't save changes. Please try again.",
+              tone: "error"
+            })
+          );
+        }
       }}
     />
   );
@@ -171,12 +192,16 @@ function EditReportDrawer({
   const fieldClass = (key: FieldKey) =>
     `${styles.input} ${showErrors && errors[key] ? styles.inputError : ""}`;
 
-  return (
-    <div
-      className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
-      onClick={close}
-    >
+  return createPortal(
+    <>
       <div
+        className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
+        onClick={close}
+        aria-hidden
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
         className={`${styles.panel} ${isPanelOpen ? styles.panelOpen : ""} ${isClosing ? styles.panelClosing : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -247,7 +272,7 @@ function EditReportDrawer({
                   onClick={() => updateField("severity", item.value as Severity)}
                 >
                   <div className={styles.severityTop}>
-                    <span className={styles.dot} style={{ background: item.color }} />
+                    <span className={styles.dot} style={{ "--dot-color": item.color } as CSSProperties} />
                     {item.label}
                   </div>
                   <div className={styles.severityMeta}>{item.hint}</div>
@@ -371,6 +396,7 @@ function EditReportDrawer({
           </button>
         </footer>
       </div>
-    </div>
+    </>,
+    document.body
   );
 }

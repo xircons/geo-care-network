@@ -7,6 +7,8 @@ interface LocationPickerMapProps {
   lat: number;
   lng: number;
   onChange: (lat: number, lng: number) => void;
+  wrapClassName?: string;
+  hintClassName?: string;
 }
 
 type LocateState =
@@ -33,7 +35,29 @@ function MapClickPick({ onPick }: { onPick: (lat: number, lng: number) => void }
   return null;
 }
 
-export default function LocationPickerMap({ lat, lng, onChange }: LocationPickerMapProps) {
+function InvalidateMapSize() {
+  const map = useMap();
+  useEffect(() => {
+    const invalidate = () => map.invalidateSize();
+    const frame = requestAnimationFrame(invalidate);
+    const container = map.getContainer().parentElement;
+    const observer = container ? new ResizeObserver(invalidate) : null;
+    if (container) observer?.observe(container);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [map]);
+  return null;
+}
+
+export default function LocationPickerMap({
+  lat,
+  lng,
+  onChange,
+  wrapClassName,
+  hintClassName
+}: LocationPickerMapProps) {
   const [locate, setLocate] = useState<LocateState>({ status: "idle" });
 
   const center: [number, number] = useMemo(() => {
@@ -85,7 +109,7 @@ export default function LocationPickerMap({ lat, lng, onChange }: LocationPicker
 
   return (
     <div>
-      <div className={styles.wrap}>
+      <div className={`${styles.wrap} ${wrapClassName ?? ""}`.trim()}>
         <MapContainer
           center={center}
           zoom={16}
@@ -98,6 +122,7 @@ export default function LocationPickerMap({ lat, lng, onChange }: LocationPicker
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           />
+          <InvalidateMapSize />
           <SyncMapView lat={center[0]} lng={center[1]} />
           <MapClickPick onPick={onChange} />
           <Marker
@@ -158,9 +183,11 @@ export default function LocationPickerMap({ lat, lng, onChange }: LocationPicker
       </div>
 
       {locate.status === "error" ? (
-        <p className={`${styles.hint} ${styles.hintError}`}>{locate.message}</p>
+        <p className={`${styles.hint} ${styles.hintError} ${hintClassName ?? ""}`.trim()}>
+          {locate.message}
+        </p>
       ) : (
-        <p className={styles.hint}>
+        <p className={`${styles.hint} ${hintClassName ?? ""}`.trim()}>
           Click the map, drag the pin, or hit <strong>Use my location</strong> to set latitude and longitude.
         </p>
       )}
