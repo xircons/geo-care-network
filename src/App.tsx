@@ -12,7 +12,8 @@ import EditReportPage from "./pages/EditReportPage";
 import MapView from "./pages/MapView";
 import NewReportPage from "./pages/NewReportPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import PulseView from "./pages/PulseView";
+import CctvView from "./pages/CctvView";
+import NotifyAgencyView from "./pages/NotifyAgencyView";
 import ReportsView from "./pages/ReportsView";
 
 function AppShell() {
@@ -24,6 +25,11 @@ function AppShell() {
   const dispatch = useAppDispatch();
 
   const openCount = reports.filter((report) => report.status !== "resolved").length;
+  // Awaiting = CCTV-sourced reports still in "open" — these are what the
+  // agency needs to triage and what the Notify alert badge counts.
+  const awaitingCount = reports.filter(
+    (r) => (r.source === "cctv" || r.reporter === "CCTV Auto-Detect") && r.status === "open"
+  ).length;
 
   useEffect(() => {
     if (!toast) return;
@@ -33,14 +39,17 @@ function AppShell() {
 
   return (
     <>
-      <TopBar openCount={openCount} />
-      <Routes location={backgroundLocation || location}>
+      <TopBar openCount={openCount} awaitingCount={awaitingCount} />
+      <Routes location={backgroundLocation || location} key={(backgroundLocation || location).pathname}>
         <Route path="/" element={<MapView />} />
         <Route path="/reports" element={<ReportsView />} />
         <Route path="/reports/new" element={<NewReportPage />} />
         <Route path="/reports/:id" element={<Navigate to="/reports" replace />} />
         <Route path="/reports/:id/edit" element={<EditReportPage />} />
-        <Route path="/pulse" element={<PulseView />} />
+        <Route path="/cctv" element={<CctvView />} />
+        <Route path="/notify" element={<NotifyAgencyView />} />
+        <Route path="/notify/archived" element={<NotifyAgencyView />} />
+        <Route path="/pulse" element={<Navigate to="/cctv" replace />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

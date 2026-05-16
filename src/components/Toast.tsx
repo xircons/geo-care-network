@@ -12,6 +12,12 @@ interface ShownState {
   tone: ToastTone;
 }
 
+/**
+ * Unified app-wide notification. Renders text only (no icon, no dot) inside a
+ * pill at the bottom-left of the viewport, slides in from the left edge on
+ * mount and back out the same way on dismiss. Tone tweaks the background and
+ * border color; layout and motion stay identical across tones.
+ */
 export default function Toast({ msg }: ToastProps) {
   const tone = useAppSelector((state) => state.ui.toastTone);
   const [shown, setShown] = useState<ShownState | null>(null);
@@ -33,41 +39,20 @@ export default function Toast({ msg }: ToastProps) {
       : shown.tone === "info"
         ? styles.info
         : styles.success;
-  const leavingClass = isLeaving
-    ? shown.tone === "error"
-      ? styles.errorLeaving
-      : styles.successLeaving
-    : "";
 
   return (
     <div
-      className={`${styles.toast} ${toneClass} ${leavingClass}`.trim()}
+      className={`${styles.toast} ${toneClass} ${isLeaving ? styles.leaving : ""}`.trim()}
       role={shown.tone === "error" ? "alert" : "status"}
       onAnimationEnd={(e) => {
         // Only unmount when the exit animation on the root finishes — ignore
-        // child animations (dot pulse, icon wobble) that bubble up.
+        // child animations that might bubble up.
         if (isLeaving && e.target === e.currentTarget) {
           setShown(null);
         }
       }}
     >
-      {shown.tone === "error" ? (
-        <svg
-          className={styles.icon}
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden
-        >
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-          <path d="M12 7v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="12" cy="16.5" r="1.1" fill="currentColor" />
-        </svg>
-      ) : (
-        <span className={styles.dot} />
-      )}
-      <span>{shown.msg}</span>
+      {shown.msg}
     </div>
   );
 }

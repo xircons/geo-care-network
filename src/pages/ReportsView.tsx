@@ -1,4 +1,5 @@
 import { useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
@@ -8,8 +9,10 @@ import ReportCard from "../features/reports/ReportCard";
 import { selectFilteredReports } from "../features/reports/selectors";
 import { useDeleteReportMutation, useGetReportsQuery } from "../features/reports/reportsApi";
 import { setCategoryFilter, setSearchQuery, setToastMessage } from "../features/ui/uiSlice";
-import type { Report } from "../types";
+import type { Report, ReportCategory } from "../types";
 import styles from "./ReportsView.module.css";
+
+const ALL_CATEGORY_KEYS = ["all", "environment", "infrastructure", "safety"] as const;
 
 const openGoogleMaps = (lat: number, lng: number) => {
   window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank", "noopener,noreferrer");
@@ -26,10 +29,16 @@ export default function ReportsView() {
   const [openReport, setOpenReport] = useState<Report | null>(null);
   const [isDetailClosing, setIsDetailClosing] = useState(false);
 
-  const categories = useMemo(
-    () => ["all", ...Array.from(new Set(reports.map((r) => r.category)))],
-    [reports]
-  );
+  const categoryCounts = useMemo(() => {
+    const byCat = { environment: 0, infrastructure: 0, safety: 0 } satisfies Record<
+      ReportCategory,
+      number
+    >;
+    for (const r of reports) {
+      byCat[r.category]++;
+    }
+    return byCat;
+  }, [reports]);
 
   if (isLoading) {
     return <LoadingState label="Loading reports" />;
@@ -84,16 +93,17 @@ export default function ReportsView() {
         <div className={styles.vSep} />
         <div className={styles.chipGroup}>
           <span className={styles.groupLabel}>Category</span>
-          {categories.map((category) => {
+          {ALL_CATEGORY_KEYS.map((category) => {
             const active = ui.categoryFilter === category;
-            const count = category === "all" ? reports.length : reports.filter((r) => r.category === category).length;
+            const count =
+              category === "all" ? reports.length : categoryCounts[category];
             return (
               <button
                 key={category}
                 type="button"
                 className={`${styles.chip} ${active ? styles.chipActive : ""}`}
                 onClick={() =>
-                  dispatch(setCategoryFilter(category as "all" | "environment" | "infrastructure" | "safety"))
+                  dispatch(setCategoryFilter(category as ReportCategory | "all"))
                 }
               >
                 {category}
@@ -111,15 +121,20 @@ export default function ReportsView() {
         </div>
       </div>
 
-      {openReport && (
-        <div
-          onClick={closeDetail}
-          className={`${styles.drawerOverlay} ${isDetailClosing ? styles.drawerOverlayClosing : ""}`}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`${styles.drawer} ${isDetailClosing ? styles.drawerClosing : ""}`}
-          >
+      {openReport &&
+        createPortal(
+          <>
+            <div
+              onClick={closeDetail}
+              className={`${styles.drawerOverlay} ${isDetailClosing ? styles.drawerOverlayClosing : ""}`}
+              aria-hidden
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              onClick={(e) => e.stopPropagation()}
+              className={`${styles.drawer} ${isDetailClosing ? styles.drawerClosing : ""}`}
+            >
             <div className={styles.drawerHeader}>
               <button type="button" onClick={closeDetail} className={styles.drawerBack}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -181,11 +196,22 @@ export default function ReportsView() {
                 <Timeline report={openReport} />
               </div>
             </div>
-          </div>
-        </div>
-      )}
+            </div>
+          </>,
+          document.body
+        )}
     </section>
   );
+}
+
+function timeAgo(s: string): string {
+  const delta = Date.now() - new Date(s).getTime();
+  const mins = Math.floor(delta / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
 }
 
 function fmtDate(s: string) {
@@ -207,12 +233,32 @@ function Meta({ label, value, mono }: { label: string; value: string; mono?: boo
 }
 
 function Timeline({ report }: { report: Report }) {
-  const severityColor = report.severity === "danger" ? "#F43F5E" : report.severity === "warning" ? "#F59E0B" : "#22C55E";
-  const events = [
-    { label: "Report filed", at: report.filed, color: "var(--mute)" },
-    { label: "Acknowledged by ward", at: new Date(new Date(report.filed).getTime() + 1000 * 60 * 60 * 8).toISOString(), color: "#F59E0B" },
-    { label: report.status === "resolved" ? "Marked resolved" : "Latest update", at: report.updated, color: severityColor }
-  ];
+  const severityColor =
+    report.severity === "danger" ? "#F43F5E" : report.severity === "warning" ? "#F59E0B" : "#22C55E";
+
+  // Always start with "Report filed" derived from report.filed (so legacy
+  // db.json rows show it even without an activityLog), then append every
+  // persisted entry. Dedupe if the log already contains a "Report filed".
+  const log = report.activityLog ?? [];
+  const sorted = [...log].sort(
+    (a, b) => new Date(a.at).getTime() - new Date(b.at).getTime()
+  );
+  const hasFiled = sorted.some((e) => e.label === "Report filed");
+  const base = hasFiled
+    ? sorted.map((e) => ({ label: e.label, at: e.at }))
+    : [{ label: "Report filed", at: report.filed }, ...sorted.map((e) => ({ label: e.label, at: e.at }))];
+
+  if (log.length === 0 && report.updated && report.updated !== report.filed) {
+    base.push({
+      label: report.status === "resolved" ? "Marked resolved" : "Latest update",
+      at: report.updated
+    });
+  }
+
+  const events = base.map((e, idx, arr) => ({
+    ...e,
+    color: idx === arr.length - 1 ? severityColor : "var(--mute)"
+  }));
 
   return (
     <div className={styles.timeline}>
@@ -223,7 +269,9 @@ function Timeline({ report }: { report: Report }) {
             style={{ "--timeline-color": event.color } as CSSProperties}
           />
           <div className={styles.timelineLabel}>{event.label}</div>
-          <div className={styles.timelineAt}>{fmtDate(event.at)}</div>
+          <div className={styles.timelineAt}>
+            {fmtDate(event.at)} <span className={styles.timelineAgo}>({timeAgo(event.at)})</span>
+          </div>
         </div>
       ))}
     </div>

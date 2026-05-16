@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import LoadingState from "../components/LoadingState";
@@ -191,12 +192,16 @@ function EditReportDrawer({
   const fieldClass = (key: FieldKey) =>
     `${styles.input} ${showErrors && errors[key] ? styles.inputError : ""}`;
 
-  return (
-    <div
-      className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
-      onClick={close}
-    >
+  return createPortal(
+    <>
       <div
+        className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ""}`}
+        onClick={close}
+        aria-hidden
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
         className={`${styles.panel} ${isPanelOpen ? styles.panelOpen : ""} ${isClosing ? styles.panelClosing : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -391,6 +396,7 @@ function EditReportDrawer({
           </button>
         </footer>
       </div>
-    </div>
+    </>,
+    document.body
   );
 }

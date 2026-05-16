@@ -5,7 +5,8 @@
   padding: 24px;
   max-width: 1600px;
   margin: 0 auto;
-  height: calc(100vh - 73px);
+  height: calc(100vh - var(--topbar-height));
+  animation: fadeIn 0.4s ease-out both;
 }
 
 .side {
@@ -16,7 +17,7 @@
 }
 
 .intro {
-  animation: fadeUp 0.5s both;
+  animation: fadeUp 0.55s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .eyebrow {
@@ -25,6 +26,7 @@
   text-transform: uppercase;
   color: var(--mute);
   font-weight: 500;
+  animation: slideInLeft 0.5s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .hero {
@@ -33,13 +35,19 @@
   line-height: 1.05;
   letter-spacing: -0.025em;
   font-weight: 700;
+  animation: fadeUp 0.65s 0.08s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .heroAccent {
   font-family: "Instrument Serif", serif;
   font-style: italic;
   font-weight: 400;
-  color: var(--accent);
+  background: linear-gradient(110deg, var(--accent), var(--accent-glow), var(--accent));
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4.5s linear infinite;
 }
 
 .lead {
@@ -47,16 +55,20 @@
   font-size: 13px;
   color: var(--mute);
   line-height: 1.5;
+  animation: fadeUp 0.55s 0.14s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  animation: fadeUp 0.5s 0.22s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .filterGroup {
-  animation: fadeUp 0.5s 0.2s both;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.55s 0.18s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .filterLabel {
@@ -87,7 +99,7 @@
   gap: 7px;
   transition: transform 0.2s cubic-bezier(.2, .8, .2, 1),
     background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.25s;
-  animation: fadeUp 0.45s both;
+  animation: fadeUp 0.45s cubic-bezier(.2, .8, .2, 1) both;
   animation-delay: var(--chip-delay, 0s);
 }
 
@@ -102,11 +114,27 @@
   color: var(--paper);
   border-color: var(--ink);
   box-shadow: 0 6px 16px -8px rgba(15, 23, 42, 0.45);
+  animation: chipBubble 0.28s cubic-bezier(.22, .92, .28, 1);
 }
 
 .chipActive:hover {
   transform: translateY(-2px);
   border-color: var(--ink);
+}
+
+@keyframes chipBubble {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.14);
+  }
+  55% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 5px rgba(15, 23, 42, 0.06);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 6px 16px -8px rgba(15, 23, 42, 0.45);
+  }
 }
 
 .chipDot {
@@ -125,7 +153,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  animation: fadeUp 0.5s 0.3s both;
+  animation: fadeUp 0.5s 0.32s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .listHeaderRow {
@@ -170,9 +198,23 @@
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(.2, .8, .2, 1),
     background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.25s;
-  animation: fadeUp 0.5s both;
-  animation-delay: var(--item-delay, 0s);
+  animation: cardEnter 0.55s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: var(--card-delay, 0s);
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+}
+
+@keyframes cardEnter {
+  0% {
+    transform: translateY(16px) scale(0.985);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 .itemActive {
@@ -238,7 +280,7 @@
 
 .mapPane {
   position: relative;
-  animation: fadeIn 0.6s both;
+  animation: fadeUp 0.5s 0.32s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .legend {
@@ -252,6 +294,7 @@
   border-radius: 14px;
   padding: 12px 14px;
   box-shadow: var(--shadow);
+  animation: fadeUp 0.5s 0.42s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .legendTitle {
@@ -284,37 +327,22 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot-color, var(--ink)) 20%, transparent);
 }
 
+/* Positioning only — the visual chrome (background, dot, animation) lives in
+   the shared <SyncBadge /> component's stylesheet. */
 .sync {
   position: absolute;
   top: 18px;
   right: 60px;
   z-index: 500;
-  background: rgba(248, 250, 252, 0.92);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 11px;
-  color: var(--mute);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.spinner {
-  animation: spin 2s linear infinite;
+  animation: fadeUp 0.5s 0.42s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .drawerOverlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: flex-end;
+  z-index: var(--z-overlay);
+  background: rgba(15, 23, 42, 0.42);
+  pointer-events: auto;
   animation: fadeIn 0.4s ease-out both;
 }
 
@@ -323,14 +351,20 @@
 }
 
 .drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
   width: min(720px, 96vw);
   height: 100vh;
-  position: relative;
-  z-index: 2001;
+  height: 100dvh;
+  z-index: var(--z-drawer);
   background: var(--paper);
-  overflow: auto;
   border-left: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   animation: drawerIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: auto;
 }
 
 .drawerClosing {
@@ -338,53 +372,96 @@
 }
 
 .drawerHeader {
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: sticky;
   top: 0;
-  background: rgba(248, 250, 252, 0.95);
-  backdrop-filter: blur(10px);
   z-index: 2;
-}
-
-.drawerBack {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--mute);
-  font-weight: 500;
-}
-
-.drawerActions {
   display: flex;
-  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
 }
 
-.drawerBtn {
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  background: var(--paper-2);
-  border: 1px solid var(--line);
+.drawerHeading {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.drawerBtnDanger {
-  padding: 8px 14px;
-  border-radius: 999px;
+.drawerKicker {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.drawerCancel {
   font-size: 12px;
-  font-weight: 500;
-  background: transparent;
-  border: 1px solid rgba(244, 63, 94, 0.4);
-  color: var(--danger);
+  color: var(--mute);
+  white-space: nowrap;
+  padding: 4px 6px;
+}
+
+.drawerCancel:hover {
+  color: var(--ink);
 }
 
 .drawerBody {
-  padding: 28px 32px 40px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 20px 24px;
+}
+
+.drawerFooter {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 20px 16px;
+  background: linear-gradient(to top, rgba(248, 250, 252, 0.98), rgba(248, 250, 252, 0.9));
+  border-top: 1px solid var(--line);
+}
+
+.drawerBtnPrimary {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #020617;
+  color: #fff;
+  border: 1px solid #020617;
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s ease;
+}
+
+.drawerBtnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -10px rgba(2, 6, 23, 0.55);
+}
+
+.drawerBtnDanger {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  color: var(--danger);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), border-color 0.2s, background 0.2s;
+}
+
+.drawerBtnDanger:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, #fff);
 }
 
 .badgeRow {
@@ -415,14 +492,16 @@
 }
 
 .drawerTitle {
-  margin: 18px 0 8px;
-  font-size: 46px;
+  margin: 12px 0 0;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  word-break: break-word;
 }
 
 .drawerFiled {
+  margin-top: 14px;
   font-size: 13px;
   color: var(--mute);
 }
@@ -433,11 +512,12 @@
 }
 
 .drawerDescription {
-  margin-top: 20px;
-  font-size: 32px;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  font-weight: 500;
+  margin-top: 14px;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+  color: var(--ink);
 }
 
 .drawerMapWrap {
@@ -543,6 +623,73 @@
   font-size: 12px;
   color: var(--mute);
   margin-top: 2px;
+}
+
+.timelineAgo {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drawerIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes drawerOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0.85;
+  }
 }
 
 @media (max-width: 1280px) {

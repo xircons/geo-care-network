@@ -1,10 +1,12 @@
 import { useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import ReportMap from "../components/ReportMap";
 import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
 import StatTile from "../components/StatTile";
+import SyncBadge from "../components/SyncBadge";
 import { useDeleteReportMutation, useGetReportsQuery } from "../features/reports/reportsApi";
 import { setToastMessage } from "../features/ui/uiSlice";
 import type { Report, ReportStatus, Severity } from "../types";
@@ -59,25 +61,25 @@ const openGoogleMaps = (lat: number, lng: number) => {
   window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank", "noopener,noreferrer");
 };
 
-function Spinner() {
-  return (
-    <svg className={styles.spinner} width="11" height="11" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="40 100" strokeLinecap="round" opacity="0.6" />
-    </svg>
-  );
-}
-
 export default function MapView() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const [deleteReport] = useDeleteReportMutation();
-  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery();
+  const { data: reports = [], isLoading, isError, refetch } = useGetReportsQuery(
+    undefined,
+    {
+      // Honest polling so the SyncBadge text matches reality and the Live
+      // feed stays fresh when an agency operator resolves a report elsewhere.
+      pollingInterval: 30_000,
+      refetchOnFocus: true,
+      refetchOnReconnect: true
+    }
+  );
   const [filter, setFilter] = useState<SeverityFilter>("all");
   const [selected, setSelected] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [isDetailClosing, setIsDetailClosing] = useState(false);
-
   const filtered = useMemo(() => {
     const list =
       filter === "all" ? reports : reports.filter((r: Report) => r.severity === filter);
@@ -85,6 +87,15 @@ export default function MapView() {
       (a: Report, b: Report) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
     );
   }, [reports, filter]);
+
+  // Live feed list shows only currently-active incidents — resolved ones drop
+  // off unless the user explicitly clicks the "Resolved" chip. Map markers
+  // still include resolved (with the green dot) so the spatial view stays
+  // historically complete; the Severity legend explains the colors.
+  const feedReports = useMemo(() => {
+    if (filter === "safe") return filtered;
+    return filtered.filter((r: Report) => r.severity !== "safe");
+  }, [filtered, filter]);
 
   const open = reports.filter((r: Report) => r.status !== "resolved").length;
   const resolved = reports.filter((r: Report) => r.status === "resolved").length;
@@ -138,7 +149,7 @@ export default function MapView() {
               const active = filter === f.id;
               const chipStyle = {
                 "--chip-color": f.color,
-                "--chip-delay": `${0.18 + idx * 0.05}s`
+                "--chip-delay": `${0.34 + idx * 0.06}s`
               } as CSSProperties;
               return (
                 <button
@@ -162,14 +173,14 @@ export default function MapView() {
           <div className={styles.listHeaderRow}>
             <div className={styles.listHeader}>Live feed</div>
             <span className={styles.listCount}>
-              {filtered.length} item{filtered.length === 1 ? "" : "s"}
+              {feedReports.length} item{feedReports.length === 1 ? "" : "s"}
             </span>
           </div>
           <div className={`thinScroll ${styles.list}`}>
-            {filtered.map((r: Report, i: number) => {
+            {feedReports.map((r: Report, i: number) => {
               const isActive = selected === r.id;
               const itemStyle = {
-                "--item-delay": `${0.35 + i * 0.06}s`
+                "--card-delay": `${0.35 + i * 0.06}s`
               } as CSSProperties;
               return (
                 <button
@@ -192,7 +203,7 @@ export default function MapView() {
                     <span className={styles.itemMetaText}>
                       {STATUS_LABEL[r.status]} · {r.category}
                     </span>
-                    <span className={styles.itemAgo}>{timeAgo(r.updated)}</span>
+                    <span className={styles.itemAgo}>{timeAgo(r.filed)}</span>
                   </div>
                   <div className={styles.itemTitle}>{r.title}</div>
                   <div className={styles.itemAddress}>{r.address}</div>
@@ -227,51 +238,32 @@ export default function MapView() {
             ))}
           </div>
         </div>
-        <div className={styles.sync}>
-          <Spinner />
-          Syncing every 30s
-        </div>
+        <SyncBadge synced={!isError} className={styles.sync} />
       </div>
 
-      {openReport && (
-        <div
-          onClick={closeDetail}
-          className={`${styles.drawerOverlay} ${isDetailClosing ? styles.drawerOverlayClosing : ""}`}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`${styles.drawer} ${isDetailClosing ? styles.drawerClosing : ""}`}
-          >
-            <div className={styles.drawerHeader}>
-              <button type="button" onClick={closeDetail} className={styles.drawerBack}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                Back to map
-              </button>
-              <div className={styles.drawerActions}>
-                <button
-                  type="button"
-                  className={styles.drawerBtn}
-                  onClick={() =>
-                    navigate(`/reports/${openReport.id}/edit`, { state: { backgroundLocation: location } })
-                  }
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className={styles.drawerBtnDanger}
-                  onClick={async () => {
-                    await deleteReport(openReport.id).unwrap();
-                    dispatch(setToastMessage("Report deleted"));
-                    closeDetail();
-                  }}
-                >
-                  Delete
-                </button>
+      {openReport &&
+        createPortal(
+          <>
+            <div
+              onClick={closeDetail}
+              className={`${styles.drawerOverlay} ${isDetailClosing ? styles.drawerOverlayClosing : ""}`}
+              aria-hidden
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              onClick={(e) => e.stopPropagation()}
+              className={`${styles.drawer} ${isDetailClosing ? styles.drawerClosing : ""}`}
+            >
+            <header className={styles.drawerHeader}>
+              <div className={styles.drawerHeading}>
+                <div className={styles.drawerKicker}>Report · {openReport.category}</div>
+                <h1 className={styles.drawerTitle}>{openReport.title}</h1>
               </div>
-            </div>
+              <button type="button" onClick={closeDetail} className={styles.drawerCancel}>
+                Cancel
+              </button>
+            </header>
 
             <div className={styles.drawerBody}>
               <div className={styles.badgeRow}>
@@ -289,7 +281,6 @@ export default function MapView() {
                 <span className={styles.badge}>{openReport.category}</span>
               </div>
 
-              <h2 className={styles.drawerTitle}>{openReport.title}</h2>
               <div className={styles.drawerFiled}>
                 Filed by <strong className={styles.drawerFiledStrong}>{openReport.reporter}</strong> · {fmtDate(openReport.filed)}
               </div>
@@ -318,9 +309,33 @@ export default function MapView() {
                 <Timeline report={openReport} />
               </div>
             </div>
-          </div>
-        </div>
-      )}
+
+            <footer className={styles.drawerFooter}>
+              <button
+                type="button"
+                className={styles.drawerBtnDanger}
+                onClick={async () => {
+                  await deleteReport(openReport.id).unwrap();
+                  dispatch(setToastMessage("Report deleted"));
+                  closeDetail();
+                }}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                className={styles.drawerBtnPrimary}
+                onClick={() =>
+                  navigate(`/reports/${openReport.id}/edit`, { state: { backgroundLocation: location } })
+                }
+              >
+                Edit report
+              </button>
+            </footer>
+            </div>
+          </>,
+          document.body
+        )}
     </div>
   );
 }
@@ -341,19 +356,31 @@ function Meta({ label, value, mono }: MetaProps) {
 }
 
 function Timeline({ report }: { report: Report }) {
-  const events = [
-    { label: "Report filed", at: report.filed, color: "var(--mute)" },
-    {
-      label: "Acknowledged by ward",
-      at: new Date(new Date(report.filed).getTime() + 1000 * 60 * 60 * 8).toISOString(),
-      color: SEV.warning.color
-    },
-    {
+  // Always start with "Report filed" derived from report.filed (so legacy
+  // db.json reports still show it even when their activityLog is empty),
+  // then append every persisted entry in chronological order. Dedupe if
+  // the log already contains its own "Report filed" row.
+  const log = report.activityLog ?? [];
+  const sorted = [...log].sort(
+    (a, b) => new Date(a.at).getTime() - new Date(b.at).getTime()
+  );
+  const hasFiled = sorted.some((e) => e.label === "Report filed");
+  const base = hasFiled
+    ? sorted.map((e) => ({ label: e.label, at: e.at }))
+    : [{ label: "Report filed", at: report.filed }, ...sorted.map((e) => ({ label: e.label, at: e.at }))];
+
+  // Legacy reports with no log: also surface the last update row.
+  if (log.length === 0 && report.updated && report.updated !== report.filed) {
+    base.push({
       label: report.status === "resolved" ? "Marked resolved" : "Latest update",
-      at: report.updated,
-      color: SEV[report.severity].color
-    }
-  ];
+      at: report.updated
+    });
+  }
+
+  const events = base.map((e, idx, arr) => ({
+    ...e,
+    color: idx === arr.length - 1 ? SEV[report.severity].color : "var(--mute)"
+  }));
 
   return (
     <div className={styles.timeline}>
@@ -364,7 +391,9 @@ function Timeline({ report }: { report: Report }) {
             style={{ "--timeline-color": event.color } as CSSProperties}
           />
           <div className={styles.timelineLabel}>{event.label}</div>
-          <div className={styles.timelineAt}>{fmtDate(event.at)}</div>
+          <div className={styles.timelineAt}>
+            {fmtDate(event.at)} <span className={styles.timelineAgo}>({timeAgo(event.at)})</span>
+          </div>
         </div>
       ))}
     </div>

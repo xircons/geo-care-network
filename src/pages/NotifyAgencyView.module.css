@@ -1,0 +1,883 @@
+.page {
+  display: grid;
+  grid-template-columns: minmax(320px, 30%) 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - var(--topbar-height));
+  min-height: 0;
+  animation: fadeIn 0.4s ease-out both;
+}
+
+@media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+    min-height: calc(100vh - var(--topbar-height));
+  }
+}
+
+/* ---------- sidebar ---------- */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.intro {
+  animation: fadeUp 0.55s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.title {
+  margin: 6px 0 0;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.lead {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+/* Wraps the Archived link + the main tab pill group — the link sits in a
+   thin row above the tabs, right-aligned, so it reads as a secondary
+   navigation affordance rather than a peer of the status tabs. */
+.tabsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tabsTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Invisible flexer that holds the right edge for the Archived link when no
+   Back link is present, preserving the same "Archived on the right" layout
+   regardless of route. */
+.tabsTopRowSpacer {
+  flex: 1;
+}
+
+/* Minimal text link — icon + label + count, underline on hover/active,
+   no background, no border. Reads as a quiet secondary nav into the
+   archive route. */
+.archivedLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Symmetrical vertical padding keeps the underline visually balanced
+     beneath the whole icon+label+count row when the border kicks in on
+     hover/active. */
+  padding: 4px 2px;
+  background: transparent;
+  /* Underline lives on the link's bottom border so it spans the entire
+     icon + text + count group as one continuous line. */
+  border: none;
+  border-bottom: 1px solid transparent;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--mute);
+  cursor: pointer;
+  white-space: nowrap;
+  /* Reset line-height to 1 and lean on flex `align-items: center` to keep
+     the icon, label and count all on the same optical mid-line. Otherwise
+     the SVG sits on the text baseline and looks shifted up vs. the
+     letterforms. */
+  line-height: 1;
+  text-decoration: none;
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+.archivedLinkText {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.archivedLink:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.archivedLinkActive {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--ink);
+}
+
+.archivedLinkIcon {
+  flex-shrink: 0;
+  opacity: 0.85;
+  /* `display: block` removes the inline-baseline gap SVGs ship with so the
+     icon centers vertically against the label instead of sitting low. */
+  display: block;
+}
+
+.archivedLinkCount {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.archivedLinkActive .archivedLinkCount {
+  color: var(--ink);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--mute);
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tab:hover { color: var(--ink); }
+
+.tabActive {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.tabCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.tabActive .tabCount {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+/* Red alert variant — used on the Awaiting tab when counts[id] > 0.
+   Wins over both the resting and active styles. Same red + pulse cadence
+   as the topbar Notify badge so the urgency signal is consistent. */
+.tabCountAlert,
+.tabActive .tabCountAlert {
+  background: #F43F5E;
+  color: #fff;
+  border-color: #F43F5E;
+  font-weight: 700;
+  box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55);
+  animation: tabCountPulse 1.8s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+
+@keyframes tabCountPulse {
+  0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(244, 63, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabCountAlert {
+    animation: none;
+  }
+}
+
+.listHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.listLabel {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.listCount {
+  font-size: 11px;
+  color: var(--mute);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: 14px;
+  padding-bottom: 6px;
+}
+
+.empty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--mute);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1),
+    background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.25s;
+}
+
+/* Hover and "drawer open for this card" share the same dark treatment — same
+   look the Live feed uses on /. */
+.card:hover,
+.cardActive {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -16px rgba(15, 23, 42, 0.45);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--mute);
+}
+
+.cardSev {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--sev-color, var(--ink));
+  /* Outer glow only — no white ring — so it reads on both light and dark
+     surfaces, the way .metaDot does on the Live feed. */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sev-color, var(--ink)) 22%, transparent);
+  flex-shrink: 0;
+}
+
+.cardStatus {
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    padding 0.2s ease;
+}
+
+.cardStatus_open {
+  background: color-mix(in srgb, #F43F5E 12%, #fff);
+  color: #BE123C;
+  border-color: color-mix(in srgb, #F43F5E 35%, transparent);
+}
+
+.cardStatus_in_progress {
+  background: color-mix(in srgb, #F59E0B 14%, #fff);
+  color: #B45309;
+  border-color: color-mix(in srgb, #F59E0B 40%, transparent);
+}
+
+.cardStatus_resolved {
+  background: color-mix(in srgb, #22C55E 12%, #fff);
+  color: #15803D;
+  border-color: color-mix(in srgb, #22C55E 35%, transparent);
+}
+
+/* Dark-card overrides — drop the pill chrome entirely so the status reads
+   as plain bright text on the dark card (matches MapView's Live feed which
+   uses colored text, not pills, in its active state). */
+.card:hover .cardStatus,
+.cardActive .cardStatus {
+  background: transparent;
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.card:hover .cardStatus_open,
+.cardActive .cardStatus_open {
+  color: #FCA5A5;
+}
+
+.card:hover .cardStatus_in_progress,
+.cardActive .cardStatus_in_progress {
+  color: #FCD34D;
+}
+
+.card:hover .cardStatus_resolved,
+.cardActive .cardStatus_resolved {
+  color: #86EFAC;
+}
+
+.cardAgo {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--mute);
+}
+
+.cardTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cardAddress {
+  font-size: 11.5px;
+  color: var(--mute);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* Dark-state recolors — mirrors the .itemActive overrides on the Live feed. */
+.card:hover .cardAgo,
+.cardActive .cardAgo {
+  color: rgba(248, 250, 252, 0.5);
+}
+
+.card:hover .cardAddress,
+.cardActive .cardAddress {
+  color: rgba(248, 250, 252, 0.55);
+}
+
+/* ---------- map shell ---------- */
+
+.mapShell {
+  position: relative;
+  min-height: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+@media (max-width: 960px) {
+  .mapShell {
+    height: 60vh;
+    min-height: 360px;
+  }
+  .sidebar { max-height: none; }
+}
+
+/* Positioning only — visual styling now lives in <SyncBadge />. */
+.pollBadge {
+  position: absolute;
+  top: 14px;
+  right: 56px;
+  z-index: 500;
+}
+
+/* ---------- drawer (right-side, mirrors MapView detail style) ---------- */
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(15, 23, 42, 0.42);
+  pointer-events: auto;
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.drawerOverlayClosing {
+  animation: fadeOut 0.38s ease-in both;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(720px, 96vw);
+  height: 100vh;
+  height: 100dvh;
+  z-index: var(--z-drawer);
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: drawerIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: auto;
+}
+
+.drawerClosing {
+  animation: drawerOut 0.38s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ---------- modal (centered popup, used for auto-pop alerts) ---------- */
+/* Same inner markup as the drawer — only the outer shell differs so we
+   can reuse all the header/body/footer/timeline styles. */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(15, 23, 42, 0.52);
+  pointer-events: auto;
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.modalOverlayClosing {
+  animation: fadeOut 0.22s ease-in both;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, 96vw);
+  max-height: 92vh;
+  z-index: var(--z-drawer);
+  background: var(--paper);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.45);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: auto;
+}
+
+.modalClosing {
+  animation: modalOut 0.22s ease-in both;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.94); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes modalOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+}
+
+.drawerHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.drawerHeading {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerKicker {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.drawerCancel {
+  font-size: 12px;
+  color: var(--mute);
+  white-space: nowrap;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.drawerCancel:hover { color: var(--ink); }
+
+.drawerBody {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 20px 24px;
+}
+
+.drawerTitle {
+  margin: 0 0 14px;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  text-transform: capitalize;
+}
+
+.severityBadge {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--sev-color, var(--ink)) 10%, transparent);
+  color: var(--sev-color, var(--ink));
+}
+
+.crashBadge {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.crashBadgeYes {
+  background: color-mix(in srgb, #F43F5E 12%, #fff);
+  color: #BE123C;
+  border-color: color-mix(in srgb, #F43F5E 35%, transparent);
+}
+
+.crashBadgeNo {
+  background: color-mix(in srgb, #22C55E 12%, #fff);
+  color: #15803D;
+  border-color: color-mix(in srgb, #22C55E 35%, transparent);
+}
+
+.drawerFiled {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.drawerFiledStrong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.drawerDescription {
+  margin-top: 14px;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.drawerMapWrap {
+  margin-top: 24px;
+  height: 220px;
+}
+
+.metaGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metaTile {
+  padding: 14px;
+  background: var(--paper-2);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.metaLabel {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+.metaValue {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.metaValueMono {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.activityWrap {
+  margin-top: 22px;
+}
+
+.activityTitle {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 22px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--line);
+}
+
+.timelineEvent {
+  position: relative;
+  padding-bottom: 18px;
+}
+
+.timelineEvent:last-child {
+  padding-bottom: 0;
+}
+
+.timelineDot {
+  position: absolute;
+  left: -22px;
+  top: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--timeline-color, var(--ink));
+}
+
+.timelineDot::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--timeline-color, var(--ink));
+}
+
+.timelineLabel {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timelineAt {
+  font-size: 12px;
+  color: var(--mute);
+  margin-top: 2px;
+}
+
+.timelineAgo {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- drawer footer: supportive copy + actions on one row ---------- */
+
+.supportiveLine {
+  font-size: 12px;
+  color: var(--mute);
+  line-height: 1.45;
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.drawerFooterActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- footer ---------- */
+
+.drawerFooter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 20px 16px;
+  background: linear-gradient(to top, rgba(248, 250, 252, 0.98), rgba(248, 250, 252, 0.9));
+  border-top: 1px solid var(--line);
+}
+
+.drawerBtnPrimary {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #020617;
+  color: #fff;
+  border: 1px solid #020617;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s ease, opacity 0.2s;
+}
+
+.drawerBtnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -10px rgba(2, 6, 23, 0.55);
+}
+
+.drawerBtnPrimary:disabled { opacity: 0.6; cursor: progress; }
+
+.drawerBtnDanger {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  color: var(--danger);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+
+.drawerBtnDanger:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, #fff);
+}
+
+.drawerBtnDanger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Resolve action — uses the safe/green palette so "completion" reads at a
+   glance and it's visually distinct from Acknowledge (dark primary). */
+.drawerBtnResolve {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #16A34A;
+  color: #fff;
+  border: 1px solid #16A34A;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s ease, opacity 0.2s, background 0.2s;
+}
+
+.drawerBtnResolve:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #15803D;
+  border-color: #15803D;
+  box-shadow: 0 12px 24px -10px rgba(22, 163, 74, 0.55);
+}
+
+.drawerBtnResolve:disabled { opacity: 0.6; cursor: progress; }
+
+/* ---------- keyframes ---------- */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drawerIn {
+  from { transform: translateX(100%); opacity: 0.85; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes drawerOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0.85; }
+}

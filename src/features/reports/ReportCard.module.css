@@ -1,4 +1,10 @@
 .card {
+  /* Flex column lets us stretch the description and pin the footer to the
+     bottom of the card. height:100% picks up the row's stretched height
+     from the parent grid, so footers across a row align horizontally. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   text-align: left;
   padding: 20px;
   border-radius: 18px;
@@ -92,6 +98,9 @@
 
 .desc {
   margin: 0;
+  /* Take all remaining vertical space so the footer is pushed down even when
+     the description is short. */
+  flex: 1;
   font-size: 13px;
   color: var(--mute);
   line-height: 1.5;

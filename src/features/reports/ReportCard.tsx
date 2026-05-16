@@ -43,7 +43,7 @@ export default function ReportCard({ report, onOpen, index = 0 }: ReportCardProp
           <span className={styles.dot} />
           {severityText}
         </div>
-        <span className={styles.metaRight}>{timeAgo(report.updated)}</span>
+        <span className={styles.metaRight}>{timeAgo(report.filed)}</span>
       </div>
       <h3 className={styles.title}>{report.title}</h3>
       <p className={styles.desc}>{report.description}</p>

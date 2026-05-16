@@ -17,6 +17,11 @@
   --safe: #22c55e;
   --shadow: 0 16px 36px -18px rgba(15, 23, 42, 0.22);
   --font-sans: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --topbar-height: 73px;
+  --z-topbar: 2100;
+  --z-overlay: 2200;
+  --z-drawer: 2500;
+  --z-toast: 3000;
 }
 
 *,
@@ -54,6 +59,34 @@ a {
   }
   to {
     transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes slideUpBig {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
     opacity: 1;
   }
 }
@@ -331,10 +364,19 @@ button:disabled {
 }
 
 /* ─── Scoped slim scrollbar (used inside scrollable panels) ──────── */
+/* Default state: thumb is muted/almost invisible so it doesn't compete with
+   the content. Hovering the scrolling panel reveals the thumb; hovering the
+   thumb itself bumps it to full visibility. Same effect across MapView's
+   Live feed and the /notify list. */
 .thinScroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
   scrollbar-gutter: stable;
+  transition: scrollbar-color 0.25s ease;
+}
+
+.thinScroll:hover {
+  scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
 }
 
 .thinScroll::-webkit-scrollbar {
@@ -347,10 +389,19 @@ button:disabled {
 }
 
 .thinScroll::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.45);
+  background: rgba(148, 163, 184, 0.18);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
+  transition: background-color 0.25s ease;
+}
+
+.thinScroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.55);
+}
+
+.thinScroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
 }
 
 .leaflet-container {

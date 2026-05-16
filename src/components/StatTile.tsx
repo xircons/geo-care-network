@@ -12,7 +12,7 @@ interface StatTileProps {
 
 export default function StatTile({ label, value, sub, accent, index = 0 }: StatTileProps) {
   const tileStyle: CSSProperties = {
-    "--tile-delay": `${index * 80}ms`,
+    "--tile-delay": `${0.22 + index * 0.06}s`,
     ...(accent ? { "--accent-color": accent } : {})
   } as CSSProperties;
 

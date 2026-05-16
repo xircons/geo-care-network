@@ -1,12 +1,9 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: var(--z-overlay);
   background: rgba(15, 23, 42, 0.42);
-  backdrop-filter: blur(6px);
   animation: fadeIn 0.4s ease-out both;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .backdropClosing {
@@ -14,10 +11,13 @@
 }
 
 .panel {
+  position: fixed;
+  top: 0;
+  right: 0;
   width: min(720px, 96vw);
   height: 100vh;
-  position: relative;
-  z-index: 2001;
+  height: 100dvh;
+  z-index: var(--z-drawer);
   background: var(--paper);
   border-left: 1px solid var(--line);
   overflow: hidden;
@@ -48,8 +48,7 @@
   justify-content: space-between;
   padding: 14px 20px;
   border-bottom: 1px solid var(--line);
-  background: rgba(248, 250, 252, 0.95);
-  backdrop-filter: blur(10px);
+  background: var(--paper);
 }
 
 .kicker {
