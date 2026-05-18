@@ -1,11 +1,37 @@
 .page {
-  animation: fadeUp 0.55s cubic-bezier(.2, .8, .2, 1) both;
-  padding: 32px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100dvh - var(--topbar-height));
+  padding: 24px 16px;
+  animation: fadeUp 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.actions {
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  animation: fadeUp 0.55s 0.25s cubic-bezier(.2, .8, .2, 1) both;
+  gap: 16px;
+  animation: fadeUp 0.55s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.gif {
+  display: block;
+  width: min(280px, 75vw);
+  height: auto;
+  max-height: min(45dvh, 320px);
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
 .backLink {
@@ -19,8 +45,10 @@
   color: var(--ink);
   font-size: 13px;
   font-weight: 600;
-  transition: transform 0.2s cubic-bezier(.2, .8, .2, 1),
-    box-shadow 0.25s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.25s ease,
+    border-color 0.2s ease;
 }
 
 .backLink:hover {

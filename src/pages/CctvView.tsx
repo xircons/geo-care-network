@@ -106,6 +106,8 @@ export default function CctvView() {
   const [lastAnalysis, setLastAnalysis] = useState<CrashAnalysisResult | null>(null);
 
   const [isGeocoding, setIsGeocoding] = useState(false);
+  /** Set when the browser cannot decode the file for `<video>` preview (codec/container). */
+  const [playbackError, setPlaybackError] = useState<string | null>(null);
   // Latches when the user types in the Address field so the AI flow stops
   // overwriting their manual input on subsequent re-analyzes.
   const addressEditedRef = useRef(false);
@@ -130,6 +132,7 @@ export default function CctvView() {
     setVideoFile(file);
     setVideoName(file.name);
     setAnalysisError(null);
+    setPlaybackError(null);
     setLastAnalysis(null);
 
     // Auto-extract GPS from the file's embedded metadata.
@@ -335,6 +338,14 @@ export default function CctvView() {
                 controls
                 autoPlay
                 playsInline
+                onLoadedData={() => setPlaybackError(null)}
+                onError={() =>
+                  setPlaybackError(
+                    "This browser cannot play this file as-is (codec or container not supported). " +
+                      "Convert to MP4 (H.264 video + AAC audio) for preview. " +
+                      "You can still try Analyze with AI — Gemini may accept the file even when preview fails."
+                  )
+                }
               />
               {/* {videoName && (
                 <span className={styles.videoName}>{videoName}</span>

@@ -6,14 +6,9 @@ const SEVERITY_SET = new Set<string>(SEVERITY_VALUES);
 const CATEGORY_SET = new Set<string>(CATEGORY_VALUES);
 const SEVERITY_RANK: Record<Severity, number> = { safe: 0, warning: 1, danger: 2 };
 
-export const MAX_INLINE_BYTES = 15 * 1024 * 1024; // ~15 MB; Gemini inline limit is ~20 MB after base64 overhead.
+export const MAX_INLINE_BYTES = 15 * 1024 * 1024;
 const MODEL_ID = "gemini-2.5-flash";
 
-// Run N independent passes in parallel and ensemble them. Gemini's video
-// pipeline isn't fully deterministic even at temperature 0 (frame sampling,
-// tokenization, and internal reasoning all introduce variance), so a single
-// pass can flip between "warning" and "safe" across reruns of the same clip.
-// Voting across multiple seeds smooths this out.
 const PASS_COUNT = 3;
 const PASS_SEEDS = [11, 47, 89];
 
@@ -75,11 +70,8 @@ export interface CrashAnalysis {
  * "1 of 3 passes detected a crash → please review carefully".
  */
 export interface CrashAnalysisResult extends CrashAnalysis {
-  /** How many of the ensemble passes voted is_crash = true. */
   crashVotes: number;
-  /** How many passes returned a usable verdict (the rest failed and were dropped). */
   totalPasses: number;
-  /** Human-readable one-liner about agreement, suitable for showing inline. */
   agreementNote: string;
 }
 
@@ -152,10 +144,6 @@ function validate(parsed: unknown): CrashAnalysis {
   };
 }
 
-/**
- * Run one Gemini analysis pass. Seed is varied across passes so the ensemble
- * gets diverse perspectives rather than three copies of the same answer.
- */
 async function runPass(
   base64: string,
   mimeType: string,
@@ -175,8 +163,6 @@ async function runPass(
           parts: [
             {
               inline_data: { mime_type: mimeType, data: base64 },
-              // Sample 10 frames/second so even a sub-second moment of contact
-              // can't fall between samples.
               video_metadata: { fps: 10 }
             },
             { text: PROMPT }
@@ -185,12 +171,8 @@ async function runPass(
       ],
       generationConfig: {
         responseMimeType: "application/json",
-        // Low temperature keeps each individual pass focused; varying the seed
-        // across passes is what produces the diversity we ensemble over.
         temperature: 0,
         seed,
-        // Generous "thinking" budget so Gemini can walk through the video
-        // frame-by-frame internally before producing its JSON verdict.
         thinkingConfig: { thinkingBudget: 8192 }
       }
     })
@@ -240,9 +222,6 @@ function aggregate(passes: CrashAnalysis[]): CrashAnalysisResult {
   const crashVotes = crashPasses.length;
   const totalPasses = passes.length;
 
-  // Pick the canonical pass we'll quote title/description/severity/category from.
-  // When at least one pass detected a crash, we look only at crash-voting passes
-  // (so we never report "danger" alongside a no-crash narrative).
   const pool = finalIsCrash ? crashPasses : passes;
   const canonical = pool.reduce((best, p) => {
     const bestRank = SEVERITY_RANK[best.severity];
@@ -259,8 +238,6 @@ function aggregate(passes: CrashAnalysis[]): CrashAnalysisResult {
   }
   const sortedCats = Object.entries(categoryTally).sort((a, b) => {
     if (b[1] !== a[1]) return b[1] - a[1];
-    // Tiebreak toward "safety" when a crash was detected, otherwise keep the
-    // canonical pass's category.
     if (a[0] === "safety") return -1;
     if (b[0] === "safety") return 1;
     return 0;
@@ -324,7 +301,6 @@ export async function analyzeVideoWithGemini(file: File): Promise<CrashAnalysisR
     .map((r) => r.value);
 
   if (successes.length === 0) {
-    // Surface the first underlying error rather than a generic "all failed".
     const firstRejection = settled.find(
       (r): r is PromiseRejectedResult => r.status === "rejected"
     );
